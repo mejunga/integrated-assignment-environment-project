@@ -1,0 +1,19 @@
+{
+    "appId": "com.mejunga.iae-project",
+    "files": ["./dist_electron", "./dist_react"],
+    "extraResources": ["dist_electron/preload.cjs","src/ui/assets/icons/*.svg"],
+    "icon": "./app_icon.png",
+    "directories": {
+    "output": "../build/app_ui"
+    },
+    "mac": {
+        "target": "dmg"
+    },
+    "linux": {
+        "target": "AppImage",
+        "category": "Utility"
+    },
+    "win": {
+        "target": ["portable", "msi"]
+    }
+}

@@ -1,20 +1,39 @@
 plugins {
+    id 'org.beryx.jlink' version '2.26.0'
     id 'java'
+    id 'application'
 }
 
-group = 'com.example'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+java {
+    modularity.inferModulePath = true
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
-dependencies {
-    testImplementation 'junit:junit:4.13.2'
+tasks.named('run') {
+    doFirst {
+        jvmArgs = [
+            "--module-path", classpath.asPath, 
+            "--add-modules", "javafx.controls,javafx.fxml,javafx.web"
+        ]
+    }
 }
 
-task buildBackend(type: Jar) {
-    from sourceSets.main.output
-    archiveBaseName = 'backend'
-    archiveVersion = version
+application {
+    mainModule = 'com.example.appcore'
+    mainClass = 'com.example.appcore.utils.RequestHandler'
+}
+
+jlink {
+    launcher {
+        jvmArgs = ['--add-modules', 'com.example.appcore']
+        name = "appCore"
+    }
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    jpackage {
+        imageName = 'app_core'
+        skipInstaller = true
+        outputDir = "./../../build"
+    }
 }

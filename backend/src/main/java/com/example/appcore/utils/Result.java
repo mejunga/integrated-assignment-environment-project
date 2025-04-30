@@ -1,0 +1,41 @@
+package com.example.appcore.utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
+public class Result {
+    public String studentId;
+    public boolean compilationSuccess;
+    public boolean executionSuccess;
+    public boolean outputCorrect;
+    public String logs;
+
+    public Result(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public boolean compareOutputs(File expected, File actual) throws IOException {
+        List<String> expectedLines = Files.readAllLines(expected.toPath());
+        List<String> actualLines = Files.readAllLines(actual.toPath());
+        this.outputCorrect = expectedLines.equals(actualLines);
+        return outputCorrect;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setCompilationSuccess(boolean success) {
+        this.compilationSuccess = success;
+    }
+
+    public void setExecutionSuccess(boolean success) {
+        this.executionSuccess = success;
+    }
+
+    public void setLogs(String logs) {
+        this.logs = logs;
+    }
+}
