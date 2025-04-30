@@ -1,0 +1,49 @@
+.configurations-page {
+    padding: 20px;
+    color: white;
+  }
+  
+  .config-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .config-item {
+    background-color: #21222f;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .config-actions button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #40415a;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .config-actions button:hover {
+    background-color: #555670;
+  }
+  
+  .add-config-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #40415a;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .add-config-btn:hover {
+    background-color: #555670;
+  }
+  

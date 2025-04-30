@@ -29,6 +29,7 @@ frontend/.parcel-cache/
 frontend/.next/
 frontend/.nuxt/
 frontend/.angular/
+dist
 
 # Electron packaging output 
 frontend/out/

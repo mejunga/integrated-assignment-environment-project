@@ -1,0 +1,262 @@
+  .base {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background-color: #171b23;
+    font-family: 'Kdam Thmor', sans-serif;
+  }
+  
+  .tool-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #06080f;
+    padding: 15px 35px 15px 15px;
+  }
+  
+  .profile {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    border-radius: 30px;
+    background-color: #171b23;
+    min-width: 225px;
+    height: 60px;
+    padding-left: 5px;
+    padding-right: 15px;
+  }
+
+  .profile:hover {
+    background-color: #11151c;
+    cursor: pointer;
+  }
+  
+  .profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #cccccc;
+  }
+  
+  .profile h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: normal;
+  }
+  
+  .profile h4 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: lighter;
+    color: #bbbbbb;
+  }
+  
+  .user-manual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #171b23;
+    width: 70px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+
+  .user-manual:hover {
+    background-color: #11151c;
+  }
+  
+  .user-manual img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .hover-text {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #2c2f36;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  
+  .user-manual:hover .hover-text {
+    display: block;
+  }
+
+  .base > div:nth-child(2) {
+    display: flex;
+    flex: 1;
+  }
+
+  .student-dirs {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+    flex-basis: 0; 
+    padding: 10px;
+  }
+  
+  .student-flow {
+    gap: 15px;
+  }
+
+  .student-flow div {
+    display: flex;
+    flex-direction: column;
+    height: 150px;
+    width: 140px;
+    height: 175px;
+    padding-top: 10px;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  .student-flow div:hover {
+    background-color:#11151c;
+    cursor: pointer;
+  }
+
+  .student-flow div img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .student-flow div h4 {
+    font-size: 15px;
+    margin: 10px;
+  }
+
+  .assignment-manager {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    background-color: #0A0E17;
+    padding: 0px 15px;
+  }
+
+  .crs-asgn {
+    flex-grow: 1;
+  }
+
+  .courses,
+  .assignments {
+    font-size: 22px;
+    padding: 0px 5px 5px 10px;
+    height: 50%;
+    width: 235px;
+    position: relative;
+  }
+
+  .assignments {
+    border-top:2px solid #40415a;
+  }
+
+  .add,
+  .import {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+  }
+
+  .add h3,
+  .import h3 {
+    line-height: 0px;
+  }
+
+  .add img,
+  .import img {
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+    margin-top: 7px;
+    margin-left: 10px;
+    border-radius: 5px;
+  }
+
+  .add img:hover,
+  .import img:hover {
+    background-color: #21222f;
+    cursor: pointer;
+  }
+
+  .assignment-list,
+  .course-list {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0; 
+  }
+
+  .course-list li,
+  .assignment-list li {
+    height: 40px; 
+    line-height: 40px; 
+    padding: 0 25px; 
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+  }
+
+  .course-list li:hover,
+  .assignment-list li:hover {
+    background-color: #21222f;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px;
+    align-items: center;
+    gap: 15px;
+    padding: 25px 0px;
+    border-top: 2px solid #40415a;
+  }
+
+  .configs-view,
+  .assignments-view {
+    padding: 10px;
+    width: 180px;
+    border-radius: 10px;
+    background-color: #1a192e;
+    text-align: center;
+  }
+
+  .configs-view:hover,
+  .assignments-view:hover {
+    background-color: #2d2c50;
+    cursor: pointer;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px; 
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: #bcbbbf;
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #40415a;
+    border-radius: 5px;
+    border: 3px solid #bcbbbf; 
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #21222f;
+  }
