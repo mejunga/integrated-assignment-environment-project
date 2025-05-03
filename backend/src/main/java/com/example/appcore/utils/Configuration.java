@@ -17,13 +17,23 @@ public class Configuration implements Serializable {
     }
 
     public String getCompileCommand(File source) {
-        return compileCommand.replace("{source}", source.getPath());
+        return compileCommand.replace("{source}", "\"" + source.getAbsolutePath() + "\"");
     }
 
     public String getRunCommand(File executable, String[] args) {
         String arguments = String.join(" ", args);
-        return runCommand.replace("{exec}", executable.getPath()) + " " + arguments;
+        String path = executable.getAbsolutePath();
+        String dir = executable.getParent();
+        String name = executable.getName().replace(".class", "");
+
+        return runCommand
+                .replace("{exec}", "\"" + path + "\"")
+                .replace("{dir}", "\"" + dir + "\"")
+                .replace("{class}", name)
+                .replace("{source}", "\"" + path + "\"")  // 🟢 Add this!
+                + " " + arguments;
     }
+
 
     public String getExpectedOutputPath() {
         return expectedOutputPath;
