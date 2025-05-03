@@ -1,8 +1,11 @@
 package com.example.appcore.utils;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Configuration {
+public class Configuration implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String compileCommand;
     private String runCommand;
     private String expectedOutputPath;

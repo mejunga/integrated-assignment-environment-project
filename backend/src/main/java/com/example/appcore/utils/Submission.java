@@ -1,8 +1,11 @@
 package com.example.appcore.utils;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Submission {
+public class Submission implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String studentId;
     private File workingDirectory;
 

@@ -5,13 +5,13 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         Configuration config = new Configuration(
-            "gcc {source} -o {source}.out",
-            "{exec}",
-            "expected_output/output.txt"
+                "javac {source}",
+                "java -cp {dir} {class}",
+                "expected_output/output.txt"
         );
 
         MainController controller = new MainController();
-        controller.createNewAssignmentProject("C Sorting AssignmentProject", config);
+        controller.createNewAssignmentProject("java Sorting AssignmentProject", config);
 
         File zipFolder = new File("test_submissions");
         controller.importSubmissions(zipFolder);
@@ -20,7 +20,13 @@ public class Main {
 
         controller.showReports();
 
-        File saveFile = new File("saved_projects/c_project.ser");
+        // Ensure the directory exists before saving
+        File saveDir = new File("saved_projects");
+        if (!saveDir.exists()) {
+            saveDir.mkdirs();
+        }
+
+        File saveFile = new File(saveDir, "c_project.ser");
         controller.saveAssignmentProject(saveFile);
 
         System.out.println("\nAssignmentProject processed and saved successfully.");

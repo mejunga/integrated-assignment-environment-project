@@ -2,10 +2,13 @@ package com.example.appcore.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.List;
 
-public class Result {
+public class Result implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public String studentId;
     public boolean compilationSuccess;
     public boolean executionSuccess;
