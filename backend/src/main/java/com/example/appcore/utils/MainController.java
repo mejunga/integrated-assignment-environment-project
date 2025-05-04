@@ -1,9 +1,6 @@
 package com.example.appcore.utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class MainController {
@@ -46,21 +43,22 @@ public class MainController {
         for (Submission submission : submissions) {
             Result result = new Result(submission.getStudentId());
 
-            File[] sourceFiles = submission.getWorkingDirectory().listFiles((dir, name) -> name.endsWith(extension));
-            if (sourceFiles == null || sourceFiles.length == 0) {
+            File sourceFile = findSourceFile(submission.getWorkingDirectory(), extension);
+            if (sourceFile == null) {
                 System.out.println("No " + extension + " file found for student: " + submission.getStudentId());
                 continue;
             }
 
-            File source = sourceFiles[0];
             File workingDir = submission.getWorkingDirectory();
+            File compileTarget = language.equals("c") ? new File(workingDir, "a.out") : null;
 
-            boolean compiled = executionManager.compile(config, source, new File(workingDir, "a.out")); // For C, provide output binary
+            boolean compiled = executionManager.compile(config, sourceFile, compileTarget);
             result.setCompilationSuccess(compiled);
 
             if (compiled) {
-                File executableFile = language.equals("java") || language.equals("python") ? source : new File(workingDir, "a.out");
-                String output = executionManager.execute(config, executableFile, new String[]{});
+                File executable = language.equals("c") ? compileTarget : sourceFile;
+
+                String output = executionManager.execute(config, executable, new String[]{});
                 boolean executed = output != null;
                 result.setExecutionSuccess(executed);
 
@@ -89,5 +87,20 @@ public class MainController {
     public void showReports() {
         System.out.println("Processing " + currentAssignmentProject.getSubmissions().size() + " submissions...");
         reportManager.generateReport(currentAssignmentProject.getResults());
+    }
+
+    private File findSourceFile(File dir, String extension) {
+        File[] entries = dir.listFiles();
+        if (entries == null) return null;
+
+        for (File f : entries) {
+            if (f.isDirectory()) {
+                File found = findSourceFile(f, extension);
+                if (found != null) return found;
+            } else if (f.getName().toLowerCase().endsWith(extension)) {
+                return f;
+            }
+        }
+        return null;
     }
 }

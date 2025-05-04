@@ -31,7 +31,11 @@ public class ExecutionManager {
     }
     private String runCommand(String command, File workingDir) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(command.split(" "));
+
+            List<String> parts = parseCommand(command);
+            ProcessBuilder builder = new ProcessBuilder(parts);
+            System.out.println("Running command: " + command);
+
             builder.directory(workingDir);
             builder.redirectErrorStream(true);
 

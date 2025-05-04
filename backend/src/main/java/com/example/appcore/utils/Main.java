@@ -4,55 +4,58 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        /*Configuration config = new Configuration(
+        Configuration config = new Configuration(
                 "java",
-                "javac {source}",
-                "java -cp {dir} {class}",
+                "javac {exec}",
+                "java -cp {workingDir} {execName}",
                 "expected_output/output.txt"
         );
 
         MainController controller = new MainController();
-        controller.createNewAssignmentProject("java Sorting AssignmentProject", config);
+        controller.createNewAssignmentProject("JavaAssignment", config);
 
         File zipFolder = new File("test_submissions");
         controller.importSubmissions(zipFolder);
 
         controller.processSubmissions();
-
         controller.showReports();
 
-        // Ensure the directory exists before saving
         File saveDir = new File("saved_projects");
         if (!saveDir.exists()) {
             saveDir.mkdirs();
         }
-
-        File saveFile = new File(saveDir, "c_project.ser");
+        File saveFile = new File(saveDir, "java_project.ser");
         controller.saveAssignmentProject(saveFile);
 
-        System.out.println("\nAssignmentProject processed and saved successfully.");
-         */
-        Configuration pythonConfig = new Configuration(
-                "python",
-                null, // Python doesn't require compilation
-                "python {exec} {args}",
+        System.out.println("\nJava AssignmentProject processed and saved successfully.");
+    }
+
+
+        /*// === PYTHON CONFIGURATION ===
+        Configuration config = new Configuration(
+                "python",             // language
+                null,                 // no compile step
+                "python {exec}",      // DROP the "{args}" placeholder so there’s no trailing empty argument
                 "expected_output/output.txt"
         );
 
         MainController controller = new MainController();
-        controller.createNewAssignmentProject("PythonAssignment", pythonConfig);
-        File zip = new File("test_submissions");
-        controller.importSubmissions(zip);
+        controller.createNewAssignmentProject("PythonAssignment", config);
+
+        File zipFolder = new File("test_submissions");
+        controller.importSubmissions(zipFolder);
+
         controller.processSubmissions();
         controller.showReports();
+
+        // Persist the project if you like
         File saveDir = new File("saved_projects");
         if (!saveDir.exists()) {
             saveDir.mkdirs();
         }
-
-        File saveFile = new File(saveDir, "c_project.ser");
+        File saveFile = new File(saveDir, "py_project.ser");
         controller.saveAssignmentProject(saveFile);
 
-        System.out.println("\nAssignmentProject processed and saved successfully.");
-    }
+        System.out.println("\nPython AssignmentProject processed and saved successfully.");
+    }*/
 }
