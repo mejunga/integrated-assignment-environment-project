@@ -31,7 +31,7 @@ frontend/.nuxt/
 frontend/.angular/
 dist
 
-# Electron packaging output 
+# Electron packaging output.txt
 frontend/out/
 frontend/build/
 frontend/*.asar
