@@ -1,40 +1,113 @@
 .new-assignment-page {
-    padding: 20px;
-    color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: #171b23;
+  margin: 0;
+  user-select: none;
   }
+
+.new-assignment-page h2 {
+  color: white;
+  padding: 15px;
+  margin: 15px 0px;
+  text-align: center;
+}
+
+.config-selection {
+  display: flex;
+  gap: 10px;
+}
+
+.config-selection select {
+flex-grow: 1;
+}
+
+.assignment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
+  margin: 30px;
+}
   
-  .assignment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
+.assignment-form label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.new {
+  font-size: 13px;
+  background-color: #606c87;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.new:hover {
+  background-color: #555670;
+}
   
-  .assignment-form label {
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  .assignment-form input,
-  .assignment-form select,
-  .assignment-form textarea {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #22242d;
-    color: white;
-  }
-  
-  .assignment-form button {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #40415a;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .assignment-form button:hover {
-    background-color: #555670;
-  }
-  
+.assignment-form input,
+.assignment-form select,
+.assignment-form textarea {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #22242d;
+  color: white;
+}
+
+
+.buttons {
+  display: flex;
+  margin: 25px 70px 40px 70px;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cancel,
+.create {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.compare-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  margin-bottom: 1rem;
+}
+
+.compare-options-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.create {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.create:hover {
+  background-color: #94c096;
+}
+
+.cancel:hover {
+  background-color: #c9817c;
+}

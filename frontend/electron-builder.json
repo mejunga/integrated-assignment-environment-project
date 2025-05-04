@@ -1,10 +1,27 @@
 {
     "appId": "com.mejunga.iae-project",
     "files": ["./dist_electron", "./dist_react"],
-    "extraResources": ["dist_electron/preload.cjs","src/ui/assets/icons/*.svg"],
+    "extraResources": [
+        "dist_electron/preload.cjs",
+        {
+            "from": "../backend/build/jpackage/core",
+            "to": "../core",                  
+            "filter": [
+                "**/*"
+            ]
+        },
+        {
+            "from": "../data",
+            "to": "../data",                  
+            "filter": [
+                "**/*"
+            ]
+        }
+    ],
     "icon": "./app_icon.png",
+    "productName": "app",
     "directories": {
-    "output": "../build/app_ui"
+        "output": "../build/app"
     },
     "mac": {
         "target": "dmg"

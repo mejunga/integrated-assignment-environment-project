@@ -1,0 +1,144 @@
+[
+  {
+    "name": "Default User",
+    "id": "00000000000",
+    "configs": [
+      {
+        "name": "Java default",
+        "language": "Java",
+        "interpreted": false,
+        "compile": {
+          "command": "javac",
+          "args": [
+            "Main.java"
+          ]
+        },
+        "run": {
+          "command": "java",
+          "args": [
+            "Main"
+          ]
+        }
+      },
+      {
+        "name": "C default",
+        "language": "C",
+        "interpreted": false,
+        "compile": {
+          "command": "gcc",
+          "args": [
+            "main.c",
+            "-o",
+            "main"
+          ]
+        },
+        "run": {
+          "command": "./main",
+          "args": []
+        }
+      },
+      {
+        "name": "C++ default",
+        "language": "C++",
+        "interpreted": false,
+        "compile": {
+          "command": "g++",
+          "args": [
+            "main.cpp",
+            "-o",
+            "main"
+          ]
+        },
+        "run": {
+          "command": "./main",
+          "args": []
+        }
+      },
+      {
+        "name": "C# default",
+        "language": "C#",
+        "interpreted": false,
+        "compile": {
+          "command": "csc",
+          "args": [
+            "Program.cs"
+          ]
+        },
+        "run": {
+          "command": "Program.exe",
+          "args": []
+        }
+      },
+      {
+        "name": "Phyton default",
+        "language": "Python",
+        "interpreted": true,
+        "run": {
+          "command": "python",
+          "args": [
+            "main.py"
+          ]
+        }
+      },
+      {
+        "name": "JavaScript default",
+        "language": "JavaScript",
+        "interpreted": true,
+        "run": {
+          "command": "node",
+          "args": [
+            "main.js"
+          ]
+        }
+      },
+      {
+        "name": "Ruby default",
+        "language": "Ruby",
+        "interpreted": true,
+        "run": {
+          "command": "ruby",
+          "args": [
+            "main.rb"
+          ]
+        }
+      },
+      {
+        "name": "PHP default",
+        "language": "PHP",
+        "interpreted": true,
+        "run": {
+          "command": "php",
+          "args": [
+            "main.php"
+          ]
+        }
+      }
+    ],
+    "assignments": [
+      {
+        "title": "asdfasd",
+        "config": {
+          "name": "C++ default",
+          "language": "C++",
+          "interpreted": false,
+          "compile": {
+            "command": "g++",
+            "args": [
+              "main.cpp",
+              "-o",
+              "main"
+            ]
+          },
+          "run": {
+            "command": "./main",
+            "args": []
+          }
+        },
+        "compareOptions": [
+          "Case Sensitive",
+          "Trim Lines"
+        ]
+      }
+    ]
+  }
+]

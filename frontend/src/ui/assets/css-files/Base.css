@@ -5,6 +5,7 @@
     width: 100vw;
     background-color: #171b23;
     font-family: 'Kdam Thmor', sans-serif;
+    user-select: none;
   }
   
   .tool-bar {
@@ -98,13 +99,29 @@
     flex: 1;
   }
 
-  .student-dirs {
+  .main-page {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     flex-grow: 1;
     flex-basis: 0; 
     padding: 10px;
+  }
+
+  .welcome-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 200px;
+  }
+
+  .welcome-title {
+    font-size: 40px;
+  }
+
+  .welcome-body {
+    font-size: 20px;
   }
   
   .student-flow {
@@ -150,17 +167,13 @@
     flex-grow: 1;
   }
 
-  .courses,
   .assignments {
     font-size: 22px;
     padding: 0px 5px 5px 10px;
-    height: 50%;
+    height: 100%;
     width: 235px;
     position: relative;
-  }
-
-  .assignments {
-    border-top:2px solid #40415a;
+    margin-top: 10px;
   }
 
   .add,
@@ -191,14 +204,12 @@
     cursor: pointer;
   }
 
-  .assignment-list,
-  .course-list {
+  .assignment-list {
     list-style-type: none; 
     padding: 0; 
     margin: 0; 
   }
 
-  .course-list li,
   .assignment-list li {
     height: 40px; 
     line-height: 40px; 
@@ -212,7 +223,6 @@
     font-size: 16px;
   }
 
-  .course-list li:hover,
   .assignment-list li:hover {
     background-color: #21222f;
   }

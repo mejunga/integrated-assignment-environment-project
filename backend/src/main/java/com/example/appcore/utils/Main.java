@@ -4,6 +4,12 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
+        try {
+            ServerHandler.startServer(8080);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Configuration config = new Configuration(
                 "java",
                 "javac {exec}",

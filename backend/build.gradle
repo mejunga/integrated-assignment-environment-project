@@ -32,8 +32,7 @@ jlink {
     }
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     jpackage {
-        imageName = 'app_core'
+        imageName = 'core'
         skipInstaller = true
-        outputDir = "./../../build"
     }
 }
