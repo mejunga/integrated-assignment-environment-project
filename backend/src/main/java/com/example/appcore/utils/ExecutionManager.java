@@ -1,46 +1,83 @@
 package com.example.appcore.utils;
 
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ExecutionManager {
 
-    public boolean compile(Configuration config, File sourceFile) {
-        String compileCmd = "javac \"" + sourceFile.getAbsolutePath() + "\"";
-        System.out.println("Compiling with command: " + compileCmd);
-        return runCommand(compileCmd, sourceFile.getParentFile());
+    public boolean compile(Configuration config, File sourceFile, File outputExecutable) {
+        String cmd = config.getCompileCommand(sourceFile, outputExecutable);
+        if (cmd == null) {
+            System.out.println("No compilation needed for: " + config.getLanguage());
+            return true;
+        }
+        return runCommand(cmd, sourceFile.getParentFile()) != null;
     }
 
-    public boolean execute(Configuration config, File sourceFile, String[] args) {
-        String className = sourceFile.getName().replace(".java", "");
-        String command = "java -cp . " + className;
-
-        System.out.println("Executing with command: " + command);
-        return runCommand(command, sourceFile.getParentFile());
+    public String execute(Configuration config, File execFile, String[] args) {
+        String command = config.getRunCommand(execFile, args);
+        return runCommand(command, execFile.getParentFile());
     }
 
-    private boolean runCommand(String command, File workingDir) {
+    public boolean compareOutput(String actualOutput, File expectedOutputFile) {
         try {
-            String[] commandParts = command.split(" ");
-            ProcessBuilder builder = new ProcessBuilder(commandParts);
-            builder.directory(workingDir);
-            builder.redirectErrorStream(true);
-            Process proc = builder.start();
-
-            // Print output and errors
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println("[Process Output] " + line);
-                }
-            }
-
-            int exitCode = proc.waitFor();
-            System.out.println("Process exited with code: " + exitCode);
-            return exitCode == 0;
-
-        } catch (IOException | InterruptedException e) {
+            String expected = new String(java.nio.file.Files.readAllBytes(expectedOutputFile.toPath())).trim();
+            return expected.equals(actualOutput.trim());
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
+    private String runCommand(String command, File workingDir) {
+        try {
+            ProcessBuilder builder = new ProcessBuilder(command.split(" "));
+            builder.directory(workingDir);
+            builder.redirectErrorStream(true);
+
+            Process process = builder.start();
+            StringBuilder output = new StringBuilder();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append(System.lineSeparator());
+                }
+            }
+
+            int exitCode = process.waitFor();
+            System.out.println("Command exited with: " + exitCode);
+            return exitCode == 0 ? output.toString() : null;
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<String> parseCommand(String command) {
+        List<String> parts = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder current = new StringBuilder();
+
+        for (char c : command.toCharArray()) {
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ' ' && !inQuotes) {
+                if (current.length() > 0) {
+                    parts.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(c);
+            }
+        }
+
+        if (current.length() > 0) {
+            parts.add(current.toString());
+        }
+
+        return parts;
+    }
 }
+

@@ -1,6 +1,9 @@
 package com.example.appcore.utils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class MainController {
@@ -29,40 +32,59 @@ public class MainController {
     }
 
     public void processSubmissions() {
+        if (currentAssignmentProject == null) {
+            System.err.println("No project loaded.");
+            return;
+        }
+
         List<Submission> submissions = currentAssignmentProject.getSubmissions();
+        Configuration config = currentAssignmentProject.getConfiguration();
+
+        String language = config.getLanguage().toLowerCase();
+        String extension = language.equals("python") ? ".py" : language.equals("c") ? ".c" : ".java";
 
         for (Submission submission : submissions) {
             Result result = new Result(submission.getStudentId());
 
-            // Find the first .java file in the working directory
-            File[] javaFiles = submission.getWorkingDirectory().listFiles((dir, name) -> name.endsWith(".java"));
-            if (javaFiles == null || javaFiles.length == 0) {
-                System.out.println("No .java file found for student: " + submission.getStudentId());
+            File[] sourceFiles = submission.getWorkingDirectory().listFiles((dir, name) -> name.endsWith(extension));
+            if (sourceFiles == null || sourceFiles.length == 0) {
+                System.out.println("No " + extension + " file found for student: " + submission.getStudentId());
                 continue;
             }
 
-            File source = javaFiles[0];
-            System.out.println("Using source file: " + source.getAbsolutePath());
+            File source = sourceFiles[0];
+            File workingDir = submission.getWorkingDirectory();
 
-            boolean compiled = executionManager.compile(currentAssignmentProject.getConfiguration(), source);
+            boolean compiled = executionManager.compile(config, source, new File(workingDir, "a.out")); // For C, provide output binary
             result.setCompilationSuccess(compiled);
 
             if (compiled) {
-                boolean executed = executionManager.execute(currentAssignmentProject.getConfiguration(), source, new String[]{});
+                File executableFile = language.equals("java") || language.equals("python") ? source : new File(workingDir, "a.out");
+                String output = executionManager.execute(config, executableFile, new String[]{});
+                boolean executed = output != null;
                 result.setExecutionSuccess(executed);
 
                 if (executed) {
-                    File expected = new File(currentAssignmentProject.getConfiguration().getExpectedOutputPath());
-                    File actual = new File(submission.getWorkingDirectory(), "output.txt");
-                    boolean correct = outputComparator.compareOutputs(expected, actual);
-                    result.outputCorrect = correct;
+                    File actualOutputFile = new File(workingDir, "output.txt");
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(actualOutputFile))) {
+                        writer.write(output);
+                    } catch (IOException e) {
+                        System.err.println("Error writing output.txt for student " + submission.getStudentId());
+                        e.printStackTrace();
+                        result.setOutputCorrect(false);
+                        currentAssignmentProject.getResults().add(result);
+                        continue;
+                    }
+
+                    File expectedOutputFile = new File(config.getExpectedOutputPath());
+                    boolean correct = outputComparator.compareOutputs(expectedOutputFile, actualOutputFile);
+                    result.setOutputCorrect(correct);
                 }
             }
 
             currentAssignmentProject.getResults().add(result);
         }
     }
-
 
     public void showReports() {
         System.out.println("Processing " + currentAssignmentProject.getSubmissions().size() + " submissions...");

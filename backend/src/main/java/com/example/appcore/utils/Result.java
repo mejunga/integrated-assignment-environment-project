@@ -20,6 +20,10 @@ public class Result implements Serializable {
     }
 
     public boolean compareOutputs(File expected, File actual) throws IOException {
+        if (!expected.exists() || !actual.exists()) {
+            this.outputCorrect = false;
+            return false;
+        }
         List<String> expectedLines = Files.readAllLines(expected.toPath());
         List<String> actualLines = Files.readAllLines(actual.toPath());
         this.outputCorrect = expectedLines.equals(actualLines);
@@ -40,5 +44,8 @@ public class Result implements Serializable {
 
     public void setLogs(String logs) {
         this.logs = logs;
+    }
+    public void setOutputCorrect(boolean outputCorrect) {
+        this.outputCorrect = outputCorrect;
     }
 }
