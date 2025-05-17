@@ -9,13 +9,6 @@
             "filter": [
                 "**/*"
             ]
-        },
-        {
-            "from": "../data",
-            "to": "../data",                  
-            "filter": [
-                "**/*"
-            ]
         }
     ],
     "icon": "./app_icon.png",

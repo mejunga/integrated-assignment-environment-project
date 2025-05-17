@@ -1,30 +1,57 @@
-import '../assets/css-files/Base.css'
+import '../assets/css-files/Base.css';
 import userManualIcon from '../assets/icons/user_manual.svg';
 import importIcon from '../assets/icons/import_icon.svg';
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import UserManual from './base_inner/UserManual'
-import AssignmentDir from './base_inner/AssignmentDir';
-import UserOptions from './base_inner/UserProfile';
+import { Outlet, useNavigate } from 'react-router-dom';
 import DefaultUserIcon from '../assets/icons/user_default.svg';
-import '../assets/css-files/Base.css';
 
 export default function Base() {
-
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<String | null>(null)
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleUser = (_event: any, user: User) => {
+    const handleUser = (_: any, user: User) => {
       setSelectedUser(user);
     };
-  
-    window.electron.getSelectedUser(handleUser);
+
     window.electron.requestSelectedUser();
-  
+    window.electron.getSelectedUser(handleUser);
+
+    const refreshHandler = () => {
+      window.electron.requestSelectedUser();
+    };
+
+    window.electron.onAssignmentListRefresh(refreshHandler);
+
     return () => {
       window.electron.removeSelectedUserListener(handleUser);
+      window.electron.removeAssignmentListRefreshListener(refreshHandler);
     };
   }, []);
+
+  const handleImportClick = async () => {
+    try {
+      if (!selectedAssignment) {
+        alert('Please select an assignment before importing.');
+        return;
+      }
+
+      const result = await window.electron.importZipFiles(selectedAssignment as string);
+      if (result?.success) {
+        alert('ZIP file imported and sent to server successfully!');
+      } else {
+        alert('Import failed or server rejected the data.');
+      }
+    } catch (err) {
+      alert('Import failed. Make sure an assignment is selected.');
+    }
+  };
+
+  const handleAssignmentClick = (assignmentTitle: string) => {
+    window.electron.setSelectedAssignment(assignmentTitle);
+    navigate(`/AssignmentsDir/${assignmentTitle}`);
+  };
 
   return (
     <div className="base">
@@ -43,29 +70,27 @@ export default function Base() {
       </div>
       <div>
         <div className='main-page'>
-          <Routes>
-            <Route path='/' element={
-                <div className='welcome-page'>
-                <h2 className='welcome-title'>Welcome to Integrated Assignment Environment</h2>
-                <p className='welcome-body'>
-                  This application helps you manage and evaluate programming assignments with ease.
-                </p>
-              </div>
-            }/>
-            <Route path='/UserOptions' element={<UserOptions/>}/>
-            <Route path='/AssignmentDir' element={<AssignmentDir/>}/>
-            <Route path='/UserManual' element={<UserManual/>}/>
-          </Routes>
+          <Outlet />
         </div>
         <div className="assignment-manager">
           <div className='crs-asgn'>
             <div className='assignments'>
               <div className='import'>            
                 <h3>Assignments</h3>
-                <img src={importIcon} alt="" />
+                <img src={importIcon} alt="" onClick={handleImportClick}/>
               </div>
               <ul className='assignment-list'>
-                {}
+                {selectedUser?.assignments?.map((asgn, index) => (
+                  <li
+                    key={index}
+                    className={`assignment-item ${selectedAssignment === asgn.title ? 'selected' : ''}`}
+                    onClick={() => {
+                      setSelectedAssignment(asgn.title);
+                      handleAssignmentClick(asgn.title);
+                    }}>
+                    {asgn.title}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -80,5 +105,5 @@ export default function Base() {
         </div>
       </div>
     </div>
-  )
+  );
 }

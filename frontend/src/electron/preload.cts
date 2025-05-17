@@ -1,22 +1,24 @@
 const electron = require('electron');
 
 electron.contextBridge.exposeInMainWorld('electron', {
-    getSelectedUser: (callback: (event: any, user: User) => void) => electron.ipcRenderer.on("selected-user", callback),
     requestSelectedUser: () => electron.ipcRenderer.send("request-selected-user"),
-    changeSelectedUser: (user: User) => electron.ipcRenderer.send("change-selected-user", user),
+    getSelectedUser: (callback: (event: any, user: User) => void) => electron.ipcRenderer.on("selected-user", callback),
     removeSelectedUserListener: (callback: (event: any, user: User) => void) => electron.ipcRenderer.removeListener("selected-user", callback),
-    openConfigurationsWindow: () => electron.ipcRenderer.send('open-configurations-window'),
     updateSelectedUserConfigs: (configs: Config[]) => electron.ipcRenderer.send("update-selected-user-configs", configs),
     syncSelectedUserToUsers: () => electron.ipcRenderer.send("sync-selected-user-to-users"),
+    changeSelectedUser: (user: User) => electron.ipcRenderer.send("change-selected-user", user),
+
+    setSelectedAssignment: (title: string) => electron.ipcRenderer.send('set-selected-assignment', title),
+    getSelectedAssignment: (callback: (event: any, title: string) => void) => electron.ipcRenderer.on('get-selected-assignment', callback),
+    requestSelectedAssignment: () => electron.ipcRenderer.send('request-selected-assignment'),
+    removeSelectedAssignmentListener: (callback: any) => electron.ipcRenderer.removeListener('get-selected-assignment', callback),
+    onAssignmentListRefresh: (callback: () => void) => electron.ipcRenderer.on('refresh-assignment-list', callback),
+    removeAssignmentListRefreshListener: (callback: () => void) => electron.ipcRenderer.removeListener('refresh-assignment-list', callback),
+
     addConfig: (config: Config) => electron.ipcRenderer.invoke('add-config', config),
     openNewAssignmentWindow: () => electron.ipcRenderer.send('open-new-assignment-window'),
-    openConfigurationsWindowWithSource: (source: string) => electron.ipcRenderer.send('open-configurations-window', source),
+    openConfigurationsWindow: () => electron.ipcRenderer.send('open-configurations-window'),
     addAssignment: (assignment: Assignment) => electron.ipcRenderer.invoke('add-assignment', assignment),
     closeCurrentWindow: () => electron.ipcRenderer.send('close-current-window'),
-    getWindowSource: (callback: (source: string | null) => void) => {
-        const arg = process.argv.find((a) => a.startsWith('--source='));
-        const source = arg ? arg.split('=')[1] : null;
-        callback(source);
-      },
-    
+    importZipFiles: (assignmentTitle: string | null) => electron.ipcRenderer.invoke('import-zip-files', assignmentTitle),
 } satisfies Window['electron']);

@@ -1,15 +1,16 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import { ensureDefaultUser, isDev, createWindow, setMainWindow } from './utils/electronUtils.js';
 import { getPreloadPath } from './utils/pathResolver.js';
 import { startJavaServer, stopServer } from './utils/serverUtils.js';
 
-const dataPath = path.join(app.getAppPath(), '..', 'data');
+const dataPath = path.join(app.getAppPath(), '..', '..', 'data');
 const selectedUserPath = path.join(dataPath, 'selected-user.json');
 const usersPath = path.join(dataPath, 'users.json');
 
-
+let selectedAssignmentTitle: string | null = null;
 let configWindow: BrowserWindow | null = null;
 
 app.on('ready', () => {
@@ -25,31 +26,24 @@ app.on('ready', () => {
   });
 
   setMainWindow(mainWindow);
-
-  startJavaServer();
   ensureDefaultUser();
 
   if (isDev()) {
     mainWindow.loadURL('http://localhost:1234/#/');
   } else {
+    startJavaServer();
+    mainWindow.setMenu(null);
     mainWindow.loadURL(`file://${path.join(app.getAppPath(), 'dist_react', 'index.html')}#/`);
   }
 
-  //----------Test----------
-  setTimeout(() => {
-    mainWindow.setMenu(null);
-    sendConfigToServer(
-      {
-        name: 'Java default',
-        language: 'Java',
-        interpreted: false,
-        compile: { command: 'javac', args: ['*.java'] },
-        run: { command: 'java', args: ['Main'] }
-      }
-    );
-  }, 5000);
-  
-  //-------------------------
+});
+
+ipcMain.on('set-selected-assignment', (_, title: string) => {
+  selectedAssignmentTitle = title;
+});
+
+ipcMain.on('request-selected-assignment', (event) => {
+  event.sender.send('get-selected-assignment', selectedAssignmentTitle);
 });
 
 ipcMain.on("request-selected-user", (event) => {
@@ -62,12 +56,12 @@ ipcMain.on("change-selected-user", (event, user) => {
   event.sender.send("selected-user", user);
 });
 
-ipcMain.on('open-configurations-window', (_, source: string | null = null) => {
+ipcMain.on('open-configurations-window', () => {
   if (configWindow && !configWindow.isDestroyed()) {
     configWindow.focus();
     return;
   }
-
+  
   configWindow = createWindow({
     width: 550,
     height: 730,
@@ -77,13 +71,12 @@ ipcMain.on('open-configurations-window', (_, source: string | null = null) => {
       preload: getPreloadPath(),
       nodeIntegration: false,
       contextIsolation: true,
-      additionalArguments: source ? [`--source=${source}`] : [],
     },
   });
 
   if (isDev()) {
     configWindow.loadURL('http://localhost:1234/#/configurations');
-  } else {
+  }else {
     configWindow.loadURL(`file://${path.join(app.getAppPath(), 'dist_react', 'index.html')}#/configurations`);
   }
 
@@ -152,14 +145,19 @@ ipcMain.handle('add-assignment', async (_, newAssignment: Assignment) => {
     );
     fs.writeFileSync(usersPath, JSON.stringify(updatedUsers, null, 2));
 
+    const allWindows = BrowserWindow.getAllWindows();
+    for (const win of allWindows) {
+      if (win.webContents.getURL().includes('#/')) {
+        win.webContents.send('refresh-assignment-list');
+      }
+    }
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Unknown error' };
   }
 });
 
-
-ipcMain.removeHandler('add-config');
 ipcMain.handle('add-config', async (_, config: Config) => {
   try {
     const selectedUser: User = JSON.parse(fs.readFileSync(selectedUserPath, 'utf-8'));
@@ -180,6 +178,71 @@ ipcMain.handle('add-config', async (_, config: Config) => {
   }
 });
 
+ipcMain.handle('import-zip-files', async (_, assignmentTitle: string) => {
+  const selectedUser: User = JSON.parse(fs.readFileSync(selectedUserPath, 'utf-8'));
+  const assignment = selectedUser.assignments?.find(a => a.title === assignmentTitle);
+
+  if (!assignment) {
+    throw new Error(`Assignment with title "${assignmentTitle}" not found.`);
+  }
+
+  const result = await dialog.showOpenDialog({
+    title: 'Select ZIP file(s)',
+    filters: [{ name: 'ZIP files', extensions: ['zip'] }],
+    properties: ['openFile', 'multiSelections']
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+
+  const destDir = path.join(dataPath, selectedUser.name, assignmentTitle);
+  fs.mkdirSync(destDir, { recursive: true });
+
+  const copiedPaths: string[] = [];
+  for (const zipPath of result.filePaths) {
+    const destPath = path.join(destDir, path.basename(zipPath));
+    fs.copyFileSync(zipPath, destPath);
+    copiedPaths.push(destPath);
+  }
+
+  const assignmentToSend: Assignment = {
+    title: assignment.title,
+    config: assignment.config,
+    compareOptions: assignment.compareOptions,
+    path: copiedPaths,
+  };
+
+  try {
+    const res = await fetch('http://localhost:8080/process-assignment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assignmentToSend),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Server returned status ${res.status}: ${errorText}`);
+    }
+
+    const returnedAssignment = await res.json();
+
+    dialog.showMessageBox({
+      type: "info",
+      title: "Server Response",
+      message: "Assignment received successfully.",
+      detail: JSON.stringify(returnedAssignment, null, 2),
+    });
+
+    return { success: true, data: returnedAssignment };
+
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    dialog.showErrorBox("Server Error", `Could not send data to server:\n${errorMessage}`);
+    return { success: false, error: errorMessage };
+  }
+});
+
 ipcMain.on('close-current-window', (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
   if (window) {
@@ -191,28 +254,3 @@ app.on('window-all-closed', () => {
   stopServer();
   app.quit();
 });
-
-
-//-------Test----------
-
-const sendConfigToServer = async (config: Config) => {
-  try {
-    const response = await fetch("http://localhost:8080/config", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(config)
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Server error: ${text}`);
-    }
-
-    const responseBody = await response.text();
-    console.log("Server response:", responseBody);
-  } catch (err) {
-    console.error("Failed to send config:", err);
-  }
-};

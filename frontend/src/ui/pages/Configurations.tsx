@@ -56,7 +56,7 @@ export default function Configurations() {
               <button className="add-config-button" onClick={() => navigate("new-config")}>
                 New Configuration
               </button>
-              <button className="cancel-button" onClick={window.close}>
+              <button className="cancel-button" onClick={() => window.electron.closeCurrentWindow()}>
                 Cancel
               </button>
             </div>

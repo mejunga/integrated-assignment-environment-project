@@ -6,7 +6,7 @@ export function isDev(): boolean {
     return process.env.NODE_ENV === 'development';
 }
 
-const dataPath = path.join(app.getAppPath(), '..', 'data');
+const dataPath = path.join(app.getAppPath(), '..', '..', 'data');
 const selectedUserPath = path.join(dataPath, 'selected-user.json');
 const usersPath = path.join(dataPath, 'users.json');
 const openWindows: BrowserWindow[] = [];

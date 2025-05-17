@@ -11,18 +11,9 @@ java {
     }
 }
 
-tasks.named('run') {
-    doFirst {
-        jvmArgs = [
-            "--module-path", classpath.asPath, 
-            "--add-modules", "javafx.controls,javafx.fxml,javafx.web"
-        ]
-    }
-}
-
 application {
     mainModule = 'com.example.appcore'
-    mainClass = 'com.example.appcore.utils.RequestHandler'
+    mainClass = 'com.example.appcore.utils.Main'
 }
 
 jlink {

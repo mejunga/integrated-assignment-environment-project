@@ -58,7 +58,7 @@ export default function NewAssignment() {
       <h2>Create New Assignment</h2>
       <form className="assignment-form">
         <label>Assignment Title</label>
-        <input type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)}/>
+        <input type="text" spellCheck={false} placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)}/>
         <label>Configuration</label>
           <div className='config-selection'>
           <select
@@ -72,13 +72,14 @@ export default function NewAssignment() {
               </option>
             ))}
           </select>
-            <button className='new' onClick={() => window.electron.openConfigurationsWindowWithSource("fromAssignment")}>New</button>
+            <button className='new' onClick={() => window.electron.openConfigurationsWindow()}>View</button>
           </div>
         <label>Compare Options</label>
         <div className="compare-options-grid">
           <label>
             <input
               type="checkbox"
+              spellCheck={false}
               checked={compareOptions.includes('Case Sensitive')}
               onChange={() => handleCompareOptionChange('Case Sensitive')}
             />
@@ -87,6 +88,7 @@ export default function NewAssignment() {
           <label>
             <input
               type="checkbox"
+              spellCheck={false}
               checked={compareOptions.includes('Sequential Output')}
               onChange={() => handleCompareOptionChange('Sequential Output')}
             />
@@ -95,6 +97,7 @@ export default function NewAssignment() {
           <label>
             <input
               type="checkbox"
+              spellCheck={false}
               checked={compareOptions.includes('Ignore Whitespace')}
               onChange={() => handleCompareOptionChange('Ignore Whitespace')}
             />
@@ -103,6 +106,7 @@ export default function NewAssignment() {
           <label>
             <input
               type="checkbox"
+              spellCheck={false}
               checked={compareOptions.includes('Trim Lines')}
               onChange={() => handleCompareOptionChange('Trim Lines')}
             />

@@ -15,6 +15,7 @@ type Assignment = {
     title: string;
     config: Config;
     compareOptions?: string[];
+    path?: string[];
 };
 
 type Config = {
@@ -37,31 +38,29 @@ type RunConfig = {
     args: string[];
 };
 
-type StudentResult = {
-    studentId: string;
-    submitted: boolean;
-    compileSuccess?: boolean;
-    runSuccess?: boolean;
-    outputMatchesExpected?: boolean;
-    actualOutput?: string;
-    errorMessage?: string;
-    logs?: string[];
-};
+type ImportZipResult = { success: boolean; dest: string };
 
 interface Window {
     electron: {
-        getSelectedUser: (callback: (event: any, user: User) => void) => void;
         requestSelectedUser: () => void;
-        changeSelectedUser: (user: User) => void;
+        getSelectedUser: (callback: (event: any, user: User) => void) => void;
         removeSelectedUserListener: (callback: (event: any, user: User) => void) => void;
-        openConfigurationsWindow: () => void;
         updateSelectedUserConfigs: (configs: Config[]) => void;
         syncSelectedUserToUsers: () => void;
+        changeSelectedUser: (user: User) => void;
+        onAssignmentListRefresh: (callback: () => void) => void;
+        removeAssignmentListRefreshListener: (callback: () => void) => void;
+
+        addAssignment: (assignment: Assignment) => Promise<{ success: boolean; error?: string }>;
+        setSelectedAssignment: (title: string) => void;
+        getSelectedAssignment: (callback: (event: any, title: string) => void) => void,
+        requestSelectedAssignment: () => void,
+        removeSelectedAssignmentListener: (callback:(event:any, title:string) => void) => void,
+
         addConfig: (config: Config) => Promise<{ success: boolean; error?: string }>;
         openNewAssignmentWindow: () => void;
-        openConfigurationsWindowWithSource: (string) => void;
-        getWindowSource: (callback: (source: string | null) => void) => void;
+        openConfigurationsWindow: () => void;
         closeCurrentWindow: () => void;
-        addAssignment: (assignment: Assignment) => Promise<{ success: boolean; error?: string }>;
+        importZipFiles: (assignmentTitle: string | null) => Promise<ImportZipResult | null>;
     };
 }

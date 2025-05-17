@@ -221,10 +221,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 16px;
+    border-radius: 10px;
   }
 
   .assignment-list li:hover {
     background-color: #21222f;
+  }
+
+  .assignment-item.selected {
+  background-color: #2d2c50;
+  color: #ffffff;
   }
 
   .options {

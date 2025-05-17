@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css-files/NewConfiguration.css';
 
@@ -18,7 +18,6 @@ export default function NewConfiguration({ editConfig }: Props) {
   );
   const [inputFile, setInputFile] = useState(editConfig?.inputFile || '');
   const [expectedOutputFile, setExpectedOutputFile] = useState(editConfig?.expectedOutputFile || '');
-  const [sourceWindow, setSourceWindow] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSave = async () => {
@@ -50,20 +49,19 @@ export default function NewConfiguration({ editConfig }: Props) {
         window.electron.requestSelectedUser();
       });
 
-      const newConfigs = user.configs?.filter(c => c.name !== editConfig.name) ?? [];
-      newConfigs.push(newConfig);
+      const newConfigs = user.configs?.map(c => c.name === editConfig.name ? newConfig : c) ?? [];
       const updatedUser = { ...user, configs: newConfigs };
 
       window.electron.changeSelectedUser(updatedUser);
       window.electron.syncSelectedUserToUsers();
       window.electron.requestSelectedUser();
-      navigate(sourceWindow === "fromAssignment" ? "/new-assignment" : "/configurations");
+      navigate("/configurations");
     } else {
       const result = await window.electron.addConfig(newConfig);
       if (result.success) {
         window.electron.syncSelectedUserToUsers();
         window.electron.requestSelectedUser();
-        navigate(sourceWindow === "fromAssignment" ? "/new-assignment" : "/configurations");
+        navigate("/configurations");
       } else {
         alert(result.error);
         console.error(result.error);
@@ -77,24 +75,7 @@ export default function NewConfiguration({ editConfig }: Props) {
       command: parts[0],
       args: parts.slice(1),
     };
-  }  
-
-  useEffect(() => {
-    window.electron.getWindowSource((source) => {
-      setSourceWindow(source);
-    });
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        navigate(sourceWindow === "fromAssignment" ? "/new-assignment" : "/configurations");
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
+  }
 
   return (
     <div className="new-configuration">
@@ -104,6 +85,7 @@ export default function NewConfiguration({ editConfig }: Props) {
           <label>Configuration Name:</label>
           <input
             type="text"
+            spellCheck={false}
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={!!editConfig}
@@ -111,41 +93,41 @@ export default function NewConfiguration({ editConfig }: Props) {
         </div>
         <div className="form-group">
           <label>Language:</label>
-          <input type="text" placeholder="e.g., JavaScript" value={language} onChange={(e) => setLanguage(e.target.value)}/>
+          <input type="text" spellCheck={false} placeholder="e.g., JavaScript" value={language} onChange={(e) => setLanguage(e.target.value)} />
         </div>
         <div className="interpreted-group">
           <label className='is-interpreted'>Interpreted?</label>
           <div className="interpreted-options">
             <label>
-              <input type="radio" checked={interpreted} onChange={() => setInterpreted(true)}/>
+              <input type="radio" checked={interpreted} onChange={() => setInterpreted(true)} />
               Yes
             </label>
             <label>
-              <input type="radio" checked={!interpreted} onChange={() => setInterpreted(false)}/>
+              <input type="radio" checked={!interpreted} onChange={() => setInterpreted(false)} />
               No
             </label>
           </div>
         </div>
         <div className="form-group">
           <label>Compile Command:</label>
-          <input type="text" placeholder="e.g., javac Main.java" value={compileCommands} onChange={(e) => setcompileCommands(e.target.value)} disabled={interpreted}/>
+          <input type="text" spellCheck={false} placeholder="e.g., javac Main.java" value={compileCommands} onChange={(e) => setcompileCommands(e.target.value)} disabled={interpreted} />
         </div>
         <div className="form-group">
           <label>Run Command:</label>
-          <input type="text" placeholder="e.g., java Main" value={runCommands} onChange={(e) => setrunCommands(e.target.value)}/>
+          <input type="text" spellCheck={false} placeholder="e.g., java Main" value={runCommands} onChange={(e) => setrunCommands(e.target.value)} />
         </div>
         <div className="form-group">
           <label>Input File (Optional):</label>
-          <input type="text" placeholder="e.g., input.txt" value={inputFile} onChange={(e) => setInputFile(e.target.value)}/>
+          <input type="text" spellCheck={false} placeholder="e.g., input.txt" value={inputFile} onChange={(e) => setInputFile(e.target.value)} />
         </div>
         <div className="form-group">
           <label>Expected Output File (Optional):</label>
-          <input type="text" placeholder="e.g., expected_output.txt" value={expectedOutputFile} onChange={(e) => setExpectedOutputFile(e.target.value)}/>
+          <input type="text" spellCheck={false} placeholder="e.g., expected_output.txt" value={expectedOutputFile} onChange={(e) => setExpectedOutputFile(e.target.value)} />
         </div>
       </div>
       <div className="buttons1">
         <button className="save-button1" onClick={handleSave}>Save</button>
-        <button className="cancel-button1" onClick={() => navigate(sourceWindow === "fromAssignment" ? '/new-assignment' : '/configurations')}>Cancel</button>
+        <button className="cancel-button1" onClick={() => navigate("/configurations")}>Cancel</button>
       </div>
     </div>
   );
