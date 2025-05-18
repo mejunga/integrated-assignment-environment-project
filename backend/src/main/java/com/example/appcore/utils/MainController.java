@@ -9,23 +9,37 @@ public class MainController {
     private final ExecutionManager executionManager = new ExecutionManager();
     private final OutputComparator outputComparator = new OutputComparator();
     private final ReportManager reportManager = new ReportManager();
-    private final FileManager fileManager = new FileManager();
 
     public void createNewAssignmentProject(String projectName, Configuration config) {
         currentAssignmentProject = new AssignmentProject(projectName, config);
     }
 
     public void loadAssignmentProject(File file) {
+        FileManager fileManager = new FileManager(currentAssignmentProject);
         currentAssignmentProject = fileManager.loadAssignmentProject(file);
     }
 
     public void saveAssignmentProject(File file) {
+        FileManager fileManager = new FileManager(currentAssignmentProject);
         fileManager.saveAssignmentProject(currentAssignmentProject, file);
     }
 
     public void importSubmissions(File zipDirectory) {
         List<Submission> submissions = zipHandler.extractAll(zipDirectory);
         currentAssignmentProject.setSubmissions(submissions);
+    }
+
+    // ✅ NEW METHOD: Import using file paths from frontend
+    public void importSubmissionsFromPaths(String[] zipPaths) {
+        FileManager fileManager = new FileManager(currentAssignmentProject);
+        for (String path : zipPaths) {
+            File zipFile = new File(path);
+            if (zipFile.exists() && zipFile.getName().endsWith(".zip")) {
+                fileManager.extractSubmission(zipFile);
+            } else {
+                System.err.println("Invalid ZIP path: " + path);
+            }
+        }
     }
 
     public void processSubmissions() {
@@ -85,7 +99,7 @@ public class MainController {
     }
 
     public void showReports() {
-        System.out.println("Processing " + currentAssignmentProject.getSubmissions().size() + " submissions...");
+        System.out.println("Processing " + currentAssignmentProject.getSubmissions().size() + " submissions.");
         reportManager.generateReport(currentAssignmentProject.getResults());
     }
 
@@ -102,5 +116,9 @@ public class MainController {
             }
         }
         return null;
+    }
+
+    public List<Result> getResults() {
+        return currentAssignmentProject.getResults();
     }
 }

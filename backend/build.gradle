@@ -16,6 +16,16 @@ application {
     mainClass = 'com.example.appcore.utils.Main'
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+
+
 jlink {
     launcher {
         jvmArgs = ['--add-modules', 'com.example.appcore']

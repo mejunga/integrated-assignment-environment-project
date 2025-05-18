@@ -17,6 +17,7 @@ public class Configuration implements Serializable {
         this.runCommand = runCommand;
         this.expectedOutputPath = expectedOutputPath;
     }
+    
 
     public String getCompileCommand(File sourceFile, File outputExecutable) {
         if (compileCommand == null) return null;
