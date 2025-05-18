@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { ensureDefaultUser, isDev, createWindow, setMainWindow } from './utils/electronUtils.js';
 import { getPreloadPath, getDataPath } from './utils/pathResolver.js';
-import { startJavaServer, stopServer } from './utils/serverUtils.js';
+import { fecthAssignment, startJavaServer, stopServer } from './utils/serverUtils.js';
 
 const selectedUserPath = path.join(getDataPath(), 'selected-user.json');
 const usersPath = path.join(getDataPath(), 'users.json');
@@ -219,32 +219,18 @@ ipcMain.handle('import-zip-files', async (_, assignmentTitle: string) => {
   const assignmentToSend: Assignment = {
     title: assignment.title,
     config: assignment.config,
+    inputFile: assignment.inputFile,
+    expectedOutputFile: assignment.expectedOutputFile,
     compareOptions: assignment.compareOptions,
     path: copiedPaths,
   };
 
   try {
-    const res = await fetch('http://localhost:8080/process-assignment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(assignmentToSend),
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Server returned status ${res.status}: ${errorText}`);
-    }
-
-    const returnedAssignment = await res.json();
-
-    dialog.showMessageBox({
-      type: "info",
-      title: "Server Response",
-      message: "Assignment received successfully.",
-      detail: JSON.stringify(returnedAssignment, null, 2),
-    });
-
-    return { success: true, data: returnedAssignment };
+  const success = await fecthAssignment(assignmentToSend);
+  if (success) {
+    return { success: true };
+  }
+  return { success: false, error: "Unknown error occurred" };
 
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);

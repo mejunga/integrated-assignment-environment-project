@@ -1,6 +1,7 @@
 build/
 .gradle/
 gradle-app.setting
+data
 
 # Java compiled files 
 backend/*.class

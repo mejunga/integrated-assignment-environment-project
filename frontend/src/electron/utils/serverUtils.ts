@@ -18,3 +18,25 @@ export function stopServer() {
         javaServerProcess = null;
     }
 }
+
+export async function fecthAssignment(assignment: Assignment): Promise<boolean> {
+  const response = await fetch('http://localhost:4040/process-assignment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(assignment)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Server returned ${response.status}: ${errorText}`);
+  }
+
+  const result = await response.json();
+  if (result !== true) {
+    throw new Error(`Unexpected response: ${JSON.stringify(result)}`);
+  }
+
+  return true;
+}
