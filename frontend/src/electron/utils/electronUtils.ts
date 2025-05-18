@@ -1,14 +1,14 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
 import fs from 'fs';
+import { getDataPath } from "./pathResolver.js";
 
 export function isDev(): boolean {
     return process.env.NODE_ENV === 'development';
 }
 
-const dataPath = path.join(app.getAppPath(), '..', '..', 'data');
-const selectedUserPath = path.join(dataPath, 'selected-user.json');
-const usersPath = path.join(dataPath, 'users.json');
+const selectedUserPath = path.join(getDataPath(), 'selected-user.json');
+const usersPath = path.join(getDataPath(), 'users.json');
 const openWindows: BrowserWindow[] = [];
 
 let mainWindow: BrowserWindow | null = null;
@@ -36,8 +36,8 @@ function closeAllWindows() {
 }
 
 export function ensureDefaultUser() {
-    if (!fs.existsSync(dataPath)) {
-      fs.mkdirSync(dataPath, { recursive: true });
+    if (!fs.existsSync(getDataPath())) {
+      fs.mkdirSync(getDataPath(), { recursive: true });
     }
   
     const defaultConfigs: Config[] = [

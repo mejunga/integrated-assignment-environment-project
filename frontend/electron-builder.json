@@ -12,9 +12,9 @@
         }
     ],
     "icon": "./app_icon.png",
-    "productName": "app",
+    "productName": "Integrated Assignment Environment",
     "directories": {
-        "output": "../build/app"
+        "output": "../build/integrated-assignment-environment"
     },
     "mac": {
         "target": "dmg"

@@ -9,3 +9,12 @@ export function getPreloadPath() {
         'dist_electron', 'preload.cjs'
     );
 }
+
+export function getDataPath() {
+    return path.join(
+        app.getAppPath(),
+        '..',
+        isDev() ? '.': '..',
+        'data'
+    );
+}

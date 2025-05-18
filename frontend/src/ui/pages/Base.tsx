@@ -70,7 +70,7 @@ export default function Base() {
       </div>
       <div>
         <div className='main-page'>
-          <Outlet />
+          <Outlet/>
         </div>
         <div className="assignment-manager">
           <div className='crs-asgn'>

@@ -14,6 +14,7 @@ electron.contextBridge.exposeInMainWorld('electron', {
     removeSelectedAssignmentListener: (callback: any) => electron.ipcRenderer.removeListener('get-selected-assignment', callback),
     onAssignmentListRefresh: (callback: () => void) => electron.ipcRenderer.on('refresh-assignment-list', callback),
     removeAssignmentListRefreshListener: (callback: () => void) => electron.ipcRenderer.removeListener('refresh-assignment-list', callback),
+    selectTxtFile: () => electron.ipcRenderer.invoke('dialog:select-txt-file'),
 
     addConfig: (config: Config) => electron.ipcRenderer.invoke('add-config', config),
     openNewAssignmentWindow: () => electron.ipcRenderer.send('open-new-assignment-window'),

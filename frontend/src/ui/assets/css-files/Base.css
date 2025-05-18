@@ -97,6 +97,7 @@
   .base > div:nth-child(2) {
     display: flex;
     flex: 1;
+    overflow: hidden;
   }
 
   .main-page {
@@ -106,6 +107,7 @@
     flex-grow: 1;
     flex-basis: 0; 
     padding: 10px;
+    overflow: hidden;
   }
 
   .welcome-page {
@@ -125,13 +127,20 @@
   }
   
   .student-flow {
+    display: flex;
+    flex-wrap: wrap;
     gap: 15px;
+    margin: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    max-height: 100%;
+    flex: 1; 
   }
 
   .student-flow div {
     display: flex;
     flex-direction: column;
-    height: 150px;
     width: 140px;
     height: 175px;
     padding-top: 10px;

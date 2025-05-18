@@ -7,6 +7,8 @@ export default function NewAssignment() {
   const [configs, setConfigs] = useState<Config[]>([]);
   const [selectedConfigName, setSelectedConfigName] = useState('');
   const [compareOptions, setCompareOptions] = useState<string[]>([]);
+  const [inputFile, setInputFile] = useState('');
+  const [expectedOutputFile, setExpectedOutputFile] = useState('');
 
   const handleCompareOptionChange = (option: string) => {
     setCompareOptions(prev =>
@@ -14,6 +16,13 @@ export default function NewAssignment() {
         ? prev.filter(o => o !== option)
         : [...prev, option]
     );
+  };
+
+  const handleBrowseClicked = async (setter: (path: string) => void) => {
+    const path = await window.electron.selectTxtFile();
+    if (path) {
+      setter(path);
+    }
   };
 
   const handleCreate = async () => {
@@ -31,6 +40,8 @@ export default function NewAssignment() {
     const newAssignment: Assignment = {
       title,
       config: selectedConfig,
+      inputFile: inputFile.trim() || undefined,
+      expectedOutputFile: expectedOutputFile.trim() || undefined,
       compareOptions
     };
   
@@ -60,11 +71,10 @@ export default function NewAssignment() {
         <label>Assignment Title</label>
         <input type="text" spellCheck={false} placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)}/>
         <label>Configuration</label>
-          <div className='config-selection'>
+        <div className='config-selection'>
           <select
             value={selectedConfigName}
-            onChange={(e) => setSelectedConfigName(e.target.value)}
-          >
+            onChange={(e) => setSelectedConfigName(e.target.value)}>
             <option value="">Select configuration</option>
             {configs.map((config) => (
               <option key={config.name} value={config.name}>
@@ -72,8 +82,18 @@ export default function NewAssignment() {
               </option>
             ))}
           </select>
-            <button className='new' onClick={() => window.electron.openConfigurationsWindow()}>View</button>
-          </div>
+          <button className='view' onClick={() => window.electron.openConfigurationsWindow()}>View</button>
+        </div>
+        <label>Input File (Optional):</label>
+        <div className="input-file">
+          <input type="text" spellCheck={false} placeholder="e.g., input.txt" value={inputFile} onChange={(e) => setInputFile(e.target.value)} />
+          <button className='view' onClick={() => handleBrowseClicked(setInputFile)}>Browse</button>
+        </div>
+        <label>Expected Output File (Optional):</label>
+        <div className="expected-output-file">
+          <input type="text" spellCheck={false} placeholder="e.g., expected_output.txt" value={expectedOutputFile} onChange={(e) => setExpectedOutputFile(e.target.value)} />
+          <button className='view' onClick={() => handleBrowseClicked(setExpectedOutputFile)}>Browse</button>
+        </div>
         <label>Compare Options</label>
         <div className="compare-options-grid">
           <label>

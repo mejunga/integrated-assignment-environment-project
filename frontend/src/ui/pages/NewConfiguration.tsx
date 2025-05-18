@@ -11,13 +11,9 @@ export default function NewConfiguration({ editConfig }: Props) {
   const [interpreted, setInterpreted] = useState(editConfig?.interpreted || false);
   const [language, setLanguage] = useState(editConfig?.language || '');
   const [compileCommands, setcompileCommands] = useState(
-    editConfig?.compile ? `${editConfig.compile.command} ${editConfig.compile.args.join(' ')}` : ''
-  );
+    editConfig?.compile ? `${editConfig.compile.command} ${editConfig.compile.args.join(' ')}` : '');
   const [runCommands, setrunCommands] = useState(
-    editConfig?.run ? `${editConfig.run.command} ${editConfig.run.args.join(' ')}` : ''
-  );
-  const [inputFile, setInputFile] = useState(editConfig?.inputFile || '');
-  const [expectedOutputFile, setExpectedOutputFile] = useState(editConfig?.expectedOutputFile || '');
+    editConfig?.run ? `${editConfig.run.command} ${editConfig.run.args.join(' ')}` : '');
   const navigate = useNavigate();
 
   const handleSave = async () => {
@@ -30,8 +26,6 @@ export default function NewConfiguration({ editConfig }: Props) {
       name: name.trim(),
       language: language.trim(),
       run: parseCommand(runCommands),
-      inputFile: inputFile.trim() || undefined,
-      expectedOutputFile: expectedOutputFile.trim() || undefined,
       interpreted,
     };
 
@@ -115,14 +109,6 @@ export default function NewConfiguration({ editConfig }: Props) {
         <div className="form-group">
           <label>Run Command:</label>
           <input type="text" spellCheck={false} placeholder="e.g., java Main" value={runCommands} onChange={(e) => setrunCommands(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Input File (Optional):</label>
-          <input type="text" spellCheck={false} placeholder="e.g., input.txt" value={inputFile} onChange={(e) => setInputFile(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Expected Output File (Optional):</label>
-          <input type="text" spellCheck={false} placeholder="e.g., expected_output.txt" value={expectedOutputFile} onChange={(e) => setExpectedOutputFile(e.target.value)} />
         </div>
       </div>
       <div className="buttons1">

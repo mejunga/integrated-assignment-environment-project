@@ -1,14 +1,12 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import fsExtra from 'fs-extra';
 import { ensureDefaultUser, isDev, createWindow, setMainWindow } from './utils/electronUtils.js';
-import { getPreloadPath } from './utils/pathResolver.js';
+import { getPreloadPath, getDataPath } from './utils/pathResolver.js';
 import { startJavaServer, stopServer } from './utils/serverUtils.js';
 
-const dataPath = path.join(app.getAppPath(), '..', '..', 'data');
-const selectedUserPath = path.join(dataPath, 'selected-user.json');
-const usersPath = path.join(dataPath, 'users.json');
+const selectedUserPath = path.join(getDataPath(), 'selected-user.json');
+const usersPath = path.join(getDataPath(), 'users.json');
 
 let selectedAssignmentTitle: string | null = null;
 let configWindow: BrowserWindow | null = null;
@@ -64,7 +62,7 @@ ipcMain.on('open-configurations-window', () => {
   
   configWindow = createWindow({
     width: 550,
-    height: 730,
+    height: 650,
     title: 'Configurations',
     resizable: false,
     webPreferences: {
@@ -89,7 +87,7 @@ ipcMain.on('open-configurations-window', () => {
 ipcMain.on('open-new-assignment-window', () => {
   const newAssignmentWindow = createWindow({
     width: 550,
-    height: 600,
+    height: 750,
     title: 'New Assignment',
     resizable: false,
     webPreferences: {
@@ -158,6 +156,18 @@ ipcMain.handle('add-assignment', async (_, newAssignment: Assignment) => {
   }
 });
 
+ipcMain.handle('dialog:select-txt-file', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Text Files', extensions: ['txt'] }]
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+  return result.filePaths[0];
+});
+
 ipcMain.handle('add-config', async (_, config: Config) => {
   try {
     const selectedUser: User = JSON.parse(fs.readFileSync(selectedUserPath, 'utf-8'));
@@ -196,7 +206,7 @@ ipcMain.handle('import-zip-files', async (_, assignmentTitle: string) => {
     return null;
   }
 
-  const destDir = path.join(dataPath, selectedUser.name, assignmentTitle);
+  const destDir = path.join(getDataPath(), 'users', selectedUser.name, assignmentTitle);
   fs.mkdirSync(destDir, { recursive: true });
 
   const copiedPaths: string[] = [];

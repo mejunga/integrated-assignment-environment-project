@@ -14,6 +14,8 @@ type Student = {
 type Assignment = {
     title: string;
     config: Config;
+    inputFile?: string;
+    expectedOutputFile?: string;
     compareOptions?: string[];
     path?: string[];
 };
@@ -23,8 +25,6 @@ type Config = {
     language: string;
     compile?: CompileConfig;
     run: RunConfig;
-    inputFile?: string;
-    expectedOutputFile?: string;
     interpreted: boolean; 
 };
 
@@ -56,6 +56,7 @@ interface Window {
         getSelectedAssignment: (callback: (event: any, title: string) => void) => void,
         requestSelectedAssignment: () => void,
         removeSelectedAssignmentListener: (callback:(event:any, title:string) => void) => void,
+        selectTxtFile: () => Promise<string | null>;
 
         addConfig: (config: Config) => Promise<{ success: boolean; error?: string }>;
         openNewAssignmentWindow: () => void;
