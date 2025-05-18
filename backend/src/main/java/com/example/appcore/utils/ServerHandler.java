@@ -35,6 +35,7 @@ public class ServerHandler {
 
                 // Read JSON payload from frontend
                 String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println(requestBody);
                 Gson gson = new Gson();
                 AssignmentPayload assignment = gson.fromJson(requestBody, AssignmentPayload.class);
 
@@ -56,6 +57,7 @@ public class ServerHandler {
                 controller.createNewAssignmentProject(assignment.title, config);
                 controller.importSubmissionsFromPaths(assignment.path);
                 controller.processSubmissions();
+                System.out.println("7");
 
                 // Inject result.json into each ZIP
                 ZipHandler zipHandler = new ZipHandler();
@@ -72,11 +74,13 @@ public class ServerHandler {
                         }
                     }
                 }
+                System.out.println("8");
 
                 // Respond to frontend
-                String response = "Assignment processed and results injected into ZIPs.";
-                byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
-                exchange.getResponseHeaders().add("Content-Type", "text/plain");
+                String jsonResponse = new Gson().toJson(true);
+                System.out.println("9");
+                byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().add("Content-Type", "application/json");
                 exchange.sendResponseHeaders(200, responseBytes.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(responseBytes);
