@@ -65,7 +65,7 @@ public class ZipHandler {
         return filename.replace(".zip", "");
     }
 
-    private void unzip(File zipFile, File outputDir) throws IOException {
+    void unzip(File zipFile, File outputDir) throws IOException {
         if (!outputDir.exists()) outputDir.mkdirs();
         byte[] buffer = new byte[1024];
 
