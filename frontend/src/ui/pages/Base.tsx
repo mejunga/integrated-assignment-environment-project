@@ -1,9 +1,11 @@
 import '../assets/css-files/Base.css';
 import userManualIcon from '../assets/icons/user_manual.svg';
 import importIcon from '../assets/icons/import_icon.svg';
+import exportIcon from '../assets/icons/export_icon.svg';
+import DefaultUserIcon from '../assets/icons/user_default.svg';
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import DefaultUserIcon from '../assets/icons/user_default.svg';
+
 
 export default function Base() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -72,18 +74,49 @@ export default function Base() {
     navigate(`/AssignmentsDir/${assignmentTitle}`);
   };
 
-  const handleEditAssignment = (title: string) => {
-    alert(`Edit: ${title}`);
-    // Burada düzenleme penceresi açabilirsin
-  };
+  const handleImportConfigs = async () => {
+  const result = await window.electron.importConfigsFromJson();
+  if (result.success) {
+    alert('Configurations imported successfully.');
+    window.electron.requestSelectedUser();
+  } else {
+    alert(`Failed to import configurations: ${result.error || 'Unknown error'}`);
+  }
+};
+
+const handleExportConfigs = async () => {
+  const result = await window.electron.exportConfigsToJson();
+  if (result.success) {
+    alert('Configurations exported successfully.');
+  } else {
+    alert('Failed to export configurations.');
+  }
+};
 
   const handleDeleteAssignment = (title: string) => {
-    const confirmed = confirm(`Are you sure you want to delete "${title}"?`);
-    if (confirmed) {
-      alert(`Deleted: ${title}`);
-      // IPC ile main process'e silme isteği gönderebilirsin
-    }
-  };
+  const confirmed = confirm(`Are you sure you want to delete "${title}"?`);
+  if (confirmed) {
+    window.electron.deleteAssignment(title)
+      .then((success) => {
+        if (success) {
+          alert(`Assignment "${title}" deleted successfully.`);
+          window.electron.requestSelectedUser(); 
+        } else {
+          alert('Failed to delete assignment.');
+        }
+      })
+      .catch((err) => {
+        alert(`Error while deleting assignment: ${err}`);
+      });
+  }
+};
+
+const handleOpenUserManual = async () => {
+  const result = await window.electron.openUserManual();
+  if (!result.success) {
+    alert(`Failed to open user manual: ${result.error || 'Unknown error'}`);
+  }
+};
 
   return (
     <div className="base">
@@ -95,9 +128,21 @@ export default function Base() {
             <h4>{selectedUser?.id}</h4>
           </div>
         </div>
-        <div className="user-manual">
-          <img src={userManualIcon} alt=""/>
-          <div className="hover-text">User Manual</div>
+        <div className='container1'>
+          <div className='container2'>
+            <div className='import-json' onClick={() => handleImportConfigs()}>
+              <img src={importIcon} alt="" />
+              <h4>Import Configurations</h4>
+            </div>
+            <div className='export-json' onClick={() => handleExportConfigs()}>
+              <img src={exportIcon} alt="" />
+              <h4>Export configurations</h4>
+            </div>
+          </div>
+          <div className="user-manual" onClick={() => handleOpenUserManual()}>
+            <img src={userManualIcon} alt=""/>
+            <div className="hover-text">User Manual</div>
+          </div>
         </div>
       </div>
       <div>
@@ -159,15 +204,6 @@ export default function Base() {
             margin: 0,
             width: '100px'
           }}>
-          <li
-            onClick={() => {
-              if (contextMenu.assignmentTitle) {
-                handleEditAssignment(contextMenu.assignmentTitle);
-              }
-              setContextMenu(prev => ({ ...prev, visible: false }));
-            }}>
-            Edit
-          </li>
           <li
             onClick={() => {
               if (contextMenu.assignmentTitle) {

@@ -14,13 +14,6 @@ export default function AssignmentsDir() {
     await window.electron.openZipFolder(zipName);
   };
 
-  const handleRename = (zipName: string) => {
-    const newName = prompt(`Rename "${zipName}" to:`);
-    if (newName) {
-      window.electron.renameZipFile(zipName, newName);
-    }
-  };
-
   const handleDelete = (zipName: string) => {
     const confirmed = confirm(`Are you sure you want to delete "${zipName}"?`);
     if (confirmed) {
@@ -61,6 +54,11 @@ export default function AssignmentsDir() {
     };
   }, [contextMenu.visible]);
 
+  const handleExport = async () => {
+    const res = await window.electron.exportResults();
+    alert(res.success ? 'Export successful!' : `Export failed: ${res.error || 'Unknown error'}`);
+  };
+
   return (
     <div className='students-base'>
       <div className="student-flow">
@@ -85,7 +83,7 @@ export default function AssignmentsDir() {
         ))}
       </div>
       <div className='export-results'>
-        <button className='export'>Export Results</button>
+        <button className='export' onClick={() => handleExport()}>Export Results</button>
       </div>
 
       {contextMenu.visible && contextMenu.zipName && (
@@ -100,20 +98,11 @@ export default function AssignmentsDir() {
             listStyle: 'none',
             padding: 0,
             margin: 0,
-            width: '120px',
+            width: '100px',
             boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-            borderRadius: '4px'
+            borderRadius: '10px'
           }}
         >
-          <li
-            style={{ padding: '8px', cursor: 'pointer' }}
-            onClick={() => {
-              handleRename(contextMenu.zipName!);
-              setContextMenu(prev => ({ ...prev, visible: false }));
-            }}
-          >
-            Rename
-          </li>
           <li
             style={{ padding: '8px', cursor: 'pointer' }}
             onClick={() => {
@@ -121,7 +110,7 @@ export default function AssignmentsDir() {
               setContextMenu(prev => ({ ...prev, visible: false }));
             }}
           >
-            Delete
+            Discard
           </li>
         </ul>
       )}

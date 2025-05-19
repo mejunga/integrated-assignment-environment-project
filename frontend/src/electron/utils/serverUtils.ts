@@ -20,7 +20,7 @@ export function stopServer() {
 }
 
 export async function fecthAssignment(assignment: Assignment): Promise<boolean> {
-  const response = await fetch('http://localhost:4040/process-assignment', {
+  const response = await fetch('http://localhost:8080/process-assignment', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

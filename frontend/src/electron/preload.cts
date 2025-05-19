@@ -15,9 +15,11 @@ electron.contextBridge.exposeInMainWorld('electron', {
     onAssignmentListRefresh: (callback: () => void) => electron.ipcRenderer.on('refresh-assignment-list', callback),
     removeAssignmentListRefreshListener: (callback: () => void) => electron.ipcRenderer.removeListener('refresh-assignment-list', callback),
     selectTxtFile: () => electron.ipcRenderer.invoke('dialog:select-txt-file'),
+    openNewAssignmentWindow: () => electron.ipcRenderer.send('open-new-assignment-window'),
+    deleteAssignment: (title: string) => electron.ipcRenderer.invoke('delete-assignment', title),
+
 
     addConfig: (config: Config) => electron.ipcRenderer.invoke('add-config', config),
-    openNewAssignmentWindow: () => electron.ipcRenderer.send('open-new-assignment-window'),
     openConfigurationsWindow: () => electron.ipcRenderer.send('open-configurations-window'),
     addAssignment: (assignment: Assignment) => electron.ipcRenderer.invoke('add-assignment', assignment),
     closeCurrentWindow: () => electron.ipcRenderer.send('close-current-window'),
@@ -27,6 +29,11 @@ electron.contextBridge.exposeInMainWorld('electron', {
     getZipFileNames: (callback: (event: any, zipNames: string[]) => void) => electron.ipcRenderer.on('get-zip-file-names', callback),
     removeZipFileNameListener: (callback: (event: any, zipNames: string[]) => void) => electron.ipcRenderer.on('get-zip-file-names', callback),
     openZipFolder: (zipName: string) => electron.ipcRenderer.invoke('open-zip-folder', zipName),
-    renameZipFile: (oldName: string, newName: string) => electron.ipcRenderer.invoke('rename-zip-file', oldName, newName),
     deleteZipFile: (zipName: string) => electron.ipcRenderer.invoke('delete-zip-file', zipName),
+
+    exportResults: () => electron.ipcRenderer.invoke('export-results'),
+    importConfigsFromJson: async () => electron.ipcRenderer.invoke('import-configs-from-json'),
+    exportConfigsToJson: async () => electron.ipcRenderer.invoke('export-configs-to-json'),
+    openUserManual: async () => electron.ipcRenderer.invoke('open-user-manual'),
+
 } satisfies Window['electron']);

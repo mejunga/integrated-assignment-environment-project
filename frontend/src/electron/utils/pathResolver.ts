@@ -18,3 +18,9 @@ export function getDataPath() {
         'data'
     );
 }
+
+export function getUserManualPath() {
+    return path.join(
+        getDataPath(), 'user_manual.pdf'
+    );
+}

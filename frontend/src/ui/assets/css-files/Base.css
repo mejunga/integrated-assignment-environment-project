@@ -71,7 +71,43 @@
   .user-manual:hover {
     background-color: #11151c;
   }
+
+  .container1 {
+    padding-top: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+  }
+
+  .container2 {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+  }
+
+.import-json,
+.export-json {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #171b23;
+  height: 50px;
+  border-radius: 10px;
+  padding: 0px 10px;
+}
+
+.import-json:hover,
+.export-json:hover {
+  background-color: #11151c;
+  cursor: pointer;
+}
   
+  .import-json img,
+  .export-json img {
+    width: 25px;
+    height: 25px;
+  }
+
   .user-manual img {
     width: 40px;
     height: 40px;

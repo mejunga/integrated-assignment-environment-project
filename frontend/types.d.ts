@@ -57,9 +57,10 @@ interface Window {
         requestSelectedAssignment: () => void,
         removeSelectedAssignmentListener: (callback:(event:any, title:string) => void) => void,
         selectTxtFile: () => Promise<string | null>;
+        openNewAssignmentWindow: () => void;
+        deleteAssignment: (assignmentTitle: string) => Promise<boolean>;
 
         addConfig: (config: Config) => Promise<{ success: boolean; error?: string }>;
-        openNewAssignmentWindow: () => void;
         openConfigurationsWindow: () => void;
         closeCurrentWindow: () => void;
         importZipFiles: (assignmentTitle: string | null) => Promise<ImportZipResult | null>;
@@ -68,7 +69,11 @@ interface Window {
         getZipFileNames: (callback: (event: any, zipNames: string[]) => void) => void,
         removeZipFileNameListener: (callback: (event: any, zipNames: string[]) => void) => void,
         openZipFolder: (zipName: string) => Promise<void>;
-        renameZipFile: (oldName: string, newName: string) => void,
         deleteZipFile: (zipName: string) => void,
+
+        exportResults: () => Promise<{ success: boolean; error?: string }>;
+        importConfigsFromJson: () => Promise<{ success: boolean; error?: string }>;
+        exportConfigsToJson: () => Promise<{ success: boolean }>;
+        openUserManual: () => Promise<{ success: boolean; error?: string }>;
     };
 }
