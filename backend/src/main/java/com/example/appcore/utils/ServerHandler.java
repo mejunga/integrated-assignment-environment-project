@@ -28,21 +28,26 @@ public class ServerHandler {
         server.createContext("/process-assignment", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
+                System.out.println("1");
                 if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+                    System.out.println("2");
                     exchange.sendResponseHeaders(405, -1);
                     return;
                 }
 
                 // Read JSON payload from frontend
+                System.out.println("3");
                 String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Gson gson = new Gson();
                 AssignmentPayload assignment = gson.fromJson(requestBody, AssignmentPayload.class);
+                System.out.println("4");
 
                 // Build Configuration
                 String compileCommand = (assignment.config.compile != null)
                         ? assignment.config.compile.command + " " + String.join(" ", assignment.config.compile.args)
                         : null;
                 String runCommand = assignment.config.run.command + " " + String.join(" ", assignment.config.run.args);
+                System.out.println("5");
 
                 Configuration config = new Configuration(
                         assignment.config.language,
@@ -50,10 +55,11 @@ public class ServerHandler {
                         runCommand,
                         assignment.expectedOutputFile
                 );
+                System.out.println("6");
 
                 // Process submissions
                 MainController controller = new MainController();
-                controller.createNewAssignmentProject(assignment.title, config);
+                controller.createNewAssignmentProject(assignment.title, config, assignment.inputFile);
                 controller.importSubmissionsFromPaths(assignment.path);
                 controller.processSubmissions();
 

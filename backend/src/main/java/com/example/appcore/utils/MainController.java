@@ -10,8 +10,8 @@ public class MainController {
     private final OutputComparator outputComparator = new OutputComparator();
     private final ReportManager reportManager = new ReportManager();
 
-    public void createNewAssignmentProject(String projectName, Configuration config) {
-        currentAssignmentProject = new AssignmentProject(projectName, config);
+    public void createNewAssignmentProject(String projectName, Configuration config, File inFile) {
+        currentAssignmentProject = new AssignmentProject(projectName, config, inFile);
     }
 
     public void loadAssignmentProject(File file) {
@@ -50,6 +50,8 @@ public class MainController {
 
         List<Submission> submissions = currentAssignmentProject.getSubmissions();
         Configuration config = currentAssignmentProject.getConfiguration();
+        File inputFile = currentAssignmentProject.getInputFile();
+        
 
         String language = config.getLanguage().toLowerCase();
         String extension = language.equals("python") ? ".py" : language.equals("c") ? ".c" : ".java";
@@ -72,7 +74,7 @@ public class MainController {
             if (compiled) {
                 File executable = language.equals("c") ? compileTarget : sourceFile;
 
-                String output = executionManager.execute(config, executable, new String[]{});
+                String output = executionManager.execute(config, executable, new String[]{}, inputFile);
                 boolean executed = output != null;
                 result.setExecutionSuccess(executed);
 
@@ -89,6 +91,7 @@ public class MainController {
                     }
 
                     File expectedOutputFile = new File(config.getExpectedOutputPath());
+                    
                     boolean correct = outputComparator.compareOutputs(expectedOutputFile, actualOutputFile);
                     result.setOutputCorrect(correct);
                 }

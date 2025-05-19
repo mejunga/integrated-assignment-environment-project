@@ -15,8 +15,24 @@ public class ExecutionManager {
         return runCommand(cmd, sourceFile.getParentFile()) != null;
     }
 
-    public String execute(Configuration config, File execFile, String[] args) {
-        String command = config.getRunCommand(execFile, args);
+    public String execute(Configuration config, File execFile, String[] args, File inputFile) {
+        List<String> argList = new ArrayList<>();
+        if (args != null) {
+            for (String arg : args) argList.add(arg);
+        }
+        if (inputFile != null && inputFile.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    for (String token : line.trim().split("\\s+")) {
+                        if (!token.isEmpty()) argList.add(token);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading inputFile: " + e.getMessage());
+            }
+        }
+        String command = config.getRunCommand(execFile, argList.toArray(new String[0]));
         return runCommand(command, execFile.getParentFile());
     }
 
@@ -29,59 +45,27 @@ public class ExecutionManager {
             return false;
         }
     }
+
     private String runCommand(String command, File workingDir) {
         try {
-
-            List<String> parts = parseCommand(command);
-            ProcessBuilder builder = new ProcessBuilder(parts);
-            System.out.println("Running command: " + command);
-
+            ProcessBuilder builder = new ProcessBuilder(command.split(" "));
             builder.directory(workingDir);
             builder.redirectErrorStream(true);
 
             Process process = builder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder output = new StringBuilder();
+            String line;
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append(System.lineSeparator());
-                }
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append(System.lineSeparator());
             }
 
-            int exitCode = process.waitFor();
-            System.out.println("Command exited with: " + exitCode);
-            return exitCode == 0 ? output.toString() : null;
-
+            process.waitFor();
+            return output.toString();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return null;
         }
     }
-
-    private List<String> parseCommand(String command) {
-        List<String> parts = new ArrayList<>();
-        boolean inQuotes = false;
-        StringBuilder current = new StringBuilder();
-
-        for (char c : command.toCharArray()) {
-            if (c == '"') {
-                inQuotes = !inQuotes;
-            } else if (c == ' ' && !inQuotes) {
-                if (current.length() > 0) {
-                    parts.add(current.toString());
-                    current.setLength(0);
-                }
-            } else {
-                current.append(c);
-            }
-        }
-
-        if (current.length() > 0) {
-            parts.add(current.toString());
-        }
-
-        return parts;
-    }
 }
-

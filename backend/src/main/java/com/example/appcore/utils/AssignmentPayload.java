@@ -1,9 +1,11 @@
 package com.example.appcore.utils;
 
+import java.io.File;
+
 public class AssignmentPayload {
     public String title;
     public ConfigPayload config;
-    public String inputFile;
+    public File inputFile;
     public String expectedOutputFile;
     public String[] compareOptions;
     public String[] path;
