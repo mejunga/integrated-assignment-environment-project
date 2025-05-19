@@ -9,6 +9,7 @@ import { fecthAssignment, startJavaServer, stopServer } from './utils/serverUtil
 let selectedAssignmentTitle: string | null = null;
 let selectedUserName: string | null = null;
 let configWindow: BrowserWindow | null = null;
+let userManualWindow: BrowserWindow | null = null;
 
 const selectedUserPath = path.join(getDataPath(), 'selected-user.json');
 const usersPath = path.join(getDataPath(), 'users.json');
@@ -45,16 +46,6 @@ ipcMain.on('set-selected-assignment', (_, title: string) => {
         win.webContents.send('get-selected-assignment', selectedAssignmentTitle);
       }
     }
-});
-
-ipcMain.handle('open-user-manual', async () => {
-  try {
-    const manualPath = getUserManualPath()
-    await shell.openPath(manualPath);
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
-  }
 });
 
 ipcMain.on('request-selected-assignment', (event) => {
@@ -446,7 +437,7 @@ ipcMain.handle('import-zip-files', async (_, assignmentTitle: string) => {
   const result = await dialog.showOpenDialog({
     title: 'Select ZIP file(s)',
     filters: [{ name: 'ZIP files', extensions: ['zip'] }],
-    properties: ['openFile', 'multiSelections']
+    properties: ['openFile']
   });
 
   if (result.canceled || result.filePaths.length === 0) {
