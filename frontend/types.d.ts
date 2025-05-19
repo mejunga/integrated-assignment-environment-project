@@ -63,5 +63,12 @@ interface Window {
         openConfigurationsWindow: () => void;
         closeCurrentWindow: () => void;
         importZipFiles: (assignmentTitle: string | null) => Promise<ImportZipResult | null>;
+        
+        requestZipFileNames: () => void;
+        getZipFileNames: (callback: (event: any, zipNames: string[]) => void) => void,
+        removeZipFileNameListener: (callback: (event: any, zipNames: string[]) => void) => void,
+        openZipFolder: (zipName: string) => Promise<void>;
+        renameZipFile: (oldName: string, newName: string) => void,
+        deleteZipFile: (zipName: string) => void,
     };
 }

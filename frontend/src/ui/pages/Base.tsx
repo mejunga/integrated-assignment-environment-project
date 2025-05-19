@@ -7,7 +7,14 @@ import DefaultUserIcon from '../assets/icons/user_default.svg';
 
 export default function Base() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedAssignment, setSelectedAssignment] = useState<String | null>(null)
+  const [selectedAssignment, setSelectedAssignment] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    assignmentTitle: string | null;
+  }>({ visible: false, x: 0, y: 0, assignmentTitle: null });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +37,18 @@ export default function Base() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClick = () => {
+      if (contextMenu.visible) {
+        setContextMenu(prev => ({ ...prev, visible: false }));
+      }
+    };
+    window.addEventListener('click', handleClick);
+    return () => {
+      window.removeEventListener('click', handleClick);
+    };
+  }, [contextMenu.visible]);
+
   const handleImportClick = async () => {
     try {
       if (!selectedAssignment) {
@@ -37,7 +56,7 @@ export default function Base() {
         return;
       }
 
-      const result = await window.electron.importZipFiles(selectedAssignment as string);
+      const result = await window.electron.importZipFiles(selectedAssignment);
       if (result?.success) {
         alert('ZIP file imported and sent to server successfully!');
       } else {
@@ -51,6 +70,19 @@ export default function Base() {
   const handleAssignmentClick = (assignmentTitle: string) => {
     window.electron.setSelectedAssignment(assignmentTitle);
     navigate(`/AssignmentsDir/${assignmentTitle}`);
+  };
+
+  const handleEditAssignment = (title: string) => {
+    alert(`Edit: ${title}`);
+    // Burada düzenleme penceresi açabilirsin
+  };
+
+  const handleDeleteAssignment = (title: string) => {
+    const confirmed = confirm(`Are you sure you want to delete "${title}"?`);
+    if (confirmed) {
+      alert(`Deleted: ${title}`);
+      // IPC ile main process'e silme isteği gönderebilirsin
+    }
   };
 
   return (
@@ -87,6 +119,15 @@ export default function Base() {
                     onClick={() => {
                       setSelectedAssignment(asgn.title);
                       handleAssignmentClick(asgn.title);
+                    }}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setContextMenu({
+                        visible: true,
+                        x: e.clientX,
+                        y: e.clientY,
+                        assignmentTitle: asgn.title
+                      });
                     }}>
                     {asgn.title}
                   </li>
@@ -94,6 +135,7 @@ export default function Base() {
               </ul>
             </div>
           </div>
+
           <div className='options'>
             <div className='configs-view' onClick={() => window.electron.openConfigurationsWindow()}>
               Configurations
@@ -104,6 +146,39 @@ export default function Base() {
           </div>
         </div>
       </div>
+      {contextMenu.visible && (
+        <ul
+          className="context-menu"
+          style={{
+            top: contextMenu.y,
+            left: contextMenu.x,
+            position: 'fixed',
+            zIndex: 9999,
+            listStyle: 'none',
+            padding: 0,
+            margin: 0,
+            width: '100px'
+          }}>
+          <li
+            onClick={() => {
+              if (contextMenu.assignmentTitle) {
+                handleEditAssignment(contextMenu.assignmentTitle);
+              }
+              setContextMenu(prev => ({ ...prev, visible: false }));
+            }}>
+            Edit
+          </li>
+          <li
+            onClick={() => {
+              if (contextMenu.assignmentTitle) {
+                handleDeleteAssignment(contextMenu.assignmentTitle);
+              }
+              setContextMenu(prev => ({ ...prev, visible: false }));
+            }}>
+            Delete
+          </li>
+        </ul>
+      )}
     </div>
   );
 }

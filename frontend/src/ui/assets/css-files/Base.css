@@ -125,6 +125,13 @@
   .welcome-body {
     font-size: 20px;
   }
+
+  .students-base {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
+    flex: 1;
+  }
   
   .student-flow {
     display: flex;
@@ -136,6 +143,23 @@
     padding-right: 10px;
     max-height: 100%;
     flex: 1; 
+  }
+
+  .export-results {
+    display: flex;
+    justify-content: end;
+  }
+
+  .export {
+    padding: 8px 15px;
+    border-radius: 10px;
+    background-color: #303045;
+    margin: 10px 25px;
+  }
+
+  .export:hover {
+    cursor: pointer;
+    background-color: #464663;
   }
 
   .student-flow div {
@@ -284,4 +308,18 @@
   
   ::-webkit-scrollbar-thumb:hover {
     background-color: #21222f;
+  }
+
+  .context-menu {
+    background-color: transparent;
+  }
+
+  .context-menu li {
+    background-color: #40415a;
+    padding: 3px 10px;
+  }
+
+  .context-menu li:hover {
+    background-color: #535475;
+    cursor: pointer;
   }

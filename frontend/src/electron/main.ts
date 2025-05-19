@@ -1,15 +1,17 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { ensureDefaultUser, isDev, createWindow, setMainWindow } from './utils/electronUtils.js';
 import { getPreloadPath, getDataPath } from './utils/pathResolver.js';
 import { fecthAssignment, startJavaServer, stopServer } from './utils/serverUtils.js';
 
+let selectedAssignmentTitle: string | null = null;
+let selectedUserName: string | null = null;
+let configWindow: BrowserWindow | null = null;
+
 const selectedUserPath = path.join(getDataPath(), 'selected-user.json');
 const usersPath = path.join(getDataPath(), 'users.json');
-
-let selectedAssignmentTitle: string | null = null;
-let configWindow: BrowserWindow | null = null;
+const zipFolderPath = path.join(getDataPath(), 'users', selectedUserName!, selectedAssignmentTitle!);
 
 app.on('ready', () => {
   const mainWindow = createWindow({
@@ -22,7 +24,6 @@ app.on('ready', () => {
       contextIsolation: true,
     }
   });
-
   setMainWindow(mainWindow);
   ensureDefaultUser();
 
@@ -36,8 +37,15 @@ app.on('ready', () => {
 
 });
 
+
 ipcMain.on('set-selected-assignment', (_, title: string) => {
   selectedAssignmentTitle = title;
+  const allWindows = BrowserWindow.getAllWindows();
+    for (const win of allWindows) {
+      if (win.webContents.getURL().includes('#/')) {
+        win.webContents.send('get-selected-assignment', selectedAssignmentTitle);
+      }
+    }
 });
 
 ipcMain.on('request-selected-assignment', (event) => {
@@ -46,6 +54,7 @@ ipcMain.on('request-selected-assignment', (event) => {
 
 ipcMain.on("request-selected-user", (event) => {
   const user = JSON.parse(fs.readFileSync(selectedUserPath, 'utf-8'));
+  selectedUserName = user.name;
   event.sender.send("selected-user", user);
 });
 
@@ -106,6 +115,48 @@ ipcMain.on('open-new-assignment-window', () => {
   newAssignmentWindow.setMenu(null);
 });
 
+ipcMain.handle('rename-zip-file', async (_event, oldName: string, newName: string) => {
+  try {
+    const selectedAssignment = getSelectedAssignmentTitleSomehow(); // Uygun şekilde al
+    const folder = path.join(zipBasePath, selectedAssignment);
+    const oldPath = path.join(folder, oldName);
+    const newPath = path.join(folder, newName);
+
+    if (!fs.existsSync(oldPath)) {
+      return { success: false, message: 'Old file does not exist' };
+    }
+
+    fs.renameSync(oldPath, newPath);
+    return { success: true };
+  } catch (err) {
+    console.error('Rename error:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('delete-zip-file', async (_event, zipName: string) => {
+  try {
+    const folder = path.join(zipBasePath, selectedAssignmentTitle);
+    const zipPath = path.join(folder, zipName);
+
+    if (fs.existsSync(zipPath)) {
+      fs.rmSync(zipPath, { recursive: true, force: true });
+      return { success: true };
+    } else {
+      return { success: false, message: 'File not found' };
+    }
+  } catch (err) {
+    console.error('Delete error:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+  ipcMain.handle('open-zip-folder', (_event, zipName: string) => {
+  const zipPath = path.join(zipFolderPath, zipName + '.zip');
+
+  return shell.openPath(zipPath);
+});
+
 ipcMain.on("sync-selected-user-to-users", (_) => {
   try {
     const selectedUserRaw = fs.readFileSync(selectedUserPath, 'utf-8');
@@ -153,6 +204,27 @@ ipcMain.handle('add-assignment', async (_, newAssignment: Assignment) => {
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Unknown error' };
+  }
+});
+
+ipcMain.on('request-zip-file-names', (event) => {
+  try {
+    if (!selectedUserName || !selectedAssignmentTitle) {
+      event.sender.send('get-zip-file-names', []);
+      return;
+    }
+    const dir = path.join(getDataPath(), 'users', selectedUserName, selectedAssignmentTitle);
+
+    if (!fs.existsSync(dir)) {
+      event.sender.send('get-zip-file-names', []);
+      return;
+    }
+
+    const files = fs.readdirSync(dir).filter(f => f.toLowerCase().endsWith('.zip')).map(f => f.slice(0, -4));
+    event.sender.send('get-zip-file-names', files);
+  } catch (err) {
+    console.error(err);
+    event.sender.send('get-zip-file-names', []);
   }
 });
 

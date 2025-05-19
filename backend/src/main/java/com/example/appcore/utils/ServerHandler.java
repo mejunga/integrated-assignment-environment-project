@@ -35,7 +35,6 @@ public class ServerHandler {
 
                 // Read JSON payload from frontend
                 String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                System.out.println(requestBody);
                 Gson gson = new Gson();
                 AssignmentPayload assignment = gson.fromJson(requestBody, AssignmentPayload.class);
 
@@ -57,28 +56,30 @@ public class ServerHandler {
                 controller.createNewAssignmentProject(assignment.title, config);
                 controller.importSubmissionsFromPaths(assignment.path);
                 controller.processSubmissions();
-                System.out.println("7");
 
                 // Inject result.json into each ZIP
                 ZipHandler zipHandler = new ZipHandler();
                 List<Result> results = controller.getResults();
+                //System.out.println(results.toString());
 
                 for (Result result : results) {
                     String studentId = result.getStudentId();
+                    //System.out.println(studentId);
                     for (String zipPath : assignment.path) {
-                        if (zipPath.contains(studentId)) {
-                            File zipFile = new File(zipPath);
+                        File zipFile = new File(zipPath);
+                        //System.out.println(zipFile.getAbsolutePath());
+                        if (zipFile.getName().contains(studentId)) {
                             if (zipFile.exists()) {
                                 zipHandler.appendResultToZip(zipFile, result);
                             }
                         }
                     }
                 }
-                System.out.println("8");
+
+                System.out.println(assignment.path[0]);
 
                 // Respond to frontend
                 String jsonResponse = new Gson().toJson(true);
-                System.out.println("9");
                 byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
                 exchange.getResponseHeaders().add("Content-Type", "application/json");
                 exchange.sendResponseHeaders(200, responseBytes.length);

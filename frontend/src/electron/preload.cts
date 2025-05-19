@@ -22,4 +22,11 @@ electron.contextBridge.exposeInMainWorld('electron', {
     addAssignment: (assignment: Assignment) => electron.ipcRenderer.invoke('add-assignment', assignment),
     closeCurrentWindow: () => electron.ipcRenderer.send('close-current-window'),
     importZipFiles: (assignmentTitle: string | null) => electron.ipcRenderer.invoke('import-zip-files', assignmentTitle),
+    
+    requestZipFileNames: () => electron.ipcRenderer.send('request-zip-file-names'),
+    getZipFileNames: (callback: (event: any, zipNames: string[]) => void) => electron.ipcRenderer.on('get-zip-file-names', callback),
+    removeZipFileNameListener: (callback: (event: any, zipNames: string[]) => void) => electron.ipcRenderer.on('get-zip-file-names', callback),
+    openZipFolder: (zipName: string) => electron.ipcRenderer.invoke('open-zip-folder', zipName),
+    renameZipFile: (oldName: string, newName: string) => electron.ipcRenderer.invoke('rename-zip-file', oldName, newName),
+    deleteZipFile: (zipName: string) => electron.ipcRenderer.invoke('delete-zip-file', zipName),
 } satisfies Window['electron']);

@@ -38,7 +38,7 @@ public class FileManager {
 
         try {
             String studentId = zipFile.getName().replace(".zip", "");
-            File outputDir = new File(zipFile.getParentFile(), "submissions/" + studentId);
+            File outputDir = new File(zipFile.getParentFile(), "temp/" + studentId);
             zipHandler.unzip(zipFile, outputDir);
 
             Submission submission = new Submission(studentId, outputDir);
