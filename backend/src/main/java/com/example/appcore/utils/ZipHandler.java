@@ -11,6 +11,7 @@ import java.util.List;
 import com.google.gson.Gson;
 
 
+//This class and its methods act as a bridge between the app and outside world
 
 public class ZipHandler {
     public List<Submission> extractAll(File zipDirectory) {
