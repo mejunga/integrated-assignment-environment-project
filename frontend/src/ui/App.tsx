@@ -4,7 +4,6 @@ import Configurations from './pages/Configurations';
 import NewAssignment from './pages/NewAssignment';
 import UserManual from './pages/base_inner/UserManual';
 import AssignmentsDir from './pages/base_inner/AssignmentsDir';
-import UserOptions from './pages/base_inner/UserProfile';
 
 export default function App() {
   return (
@@ -18,7 +17,6 @@ export default function App() {
             </p>
           </div>
         } />
-        <Route path="UserOptions" element={<UserOptions />} />
         <Route path="AssignmentsDir/:title" element={<AssignmentsDir />} />
         <Route path="UserManual" element={<UserManual />} />
       </Route>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import FolderIcon from '../../assets/icons/folder_icon.svg';
+import { useNavigate } from 'react-router-dom';
 
 export default function AssignmentsDir() {
   const [zipFiles, setZipFiles] = useState<string[]>([]);
@@ -9,6 +10,7 @@ export default function AssignmentsDir() {
     y: number;
     zipName: string | null;
   }>({ visible: false, x: 0, y: 0, zipName: null });
+  const navigate = useNavigate();
 
   const onZipClick = async (zipName: string) => {
     await window.electron.openZipFolder(zipName);
@@ -41,6 +43,20 @@ export default function AssignmentsDir() {
       window.electron.removeSelectedAssignmentListener(assignmentChangeHandler);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        navigate('/');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [navigate]);
 
   useEffect(() => {
     const closeMenu = () => {

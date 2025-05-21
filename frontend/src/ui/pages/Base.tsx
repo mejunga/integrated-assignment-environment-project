@@ -6,7 +6,6 @@ import DefaultUserIcon from '../assets/icons/user_default.svg';
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-
 export default function Base() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<string | null>(null);
@@ -112,10 +111,7 @@ const handleExportConfigs = async () => {
 };
 
 const handleOpenUserManual = async () => {
-  const result = await window.electron.openUserManual();
-  if (!result.success) {
-    alert(`Failed to open user manual: ${result.error || 'Unknown error'}`);
-  }
+  navigate('/UserManual');
 };
 
   return (
